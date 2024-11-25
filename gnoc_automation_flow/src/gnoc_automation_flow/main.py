@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+from random import randint
+
+from pydantic import BaseModel
+
+from crewai.flow.flow import Flow, listen, start
+
+from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
+
+
+class PriorityIdentificationState(BaseModel):
+    priority: str = ""
+    issue_reported: str = ""
+
+
+class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
+
+    @start()
+    def generate_issue_reported_user(self):
+        print("Generating issue reported by user")
+        # self.state.issue_reported = "As a user I am not able to perform the transaction from the last 15 minutes and due to this over 500K transactions have declined that result in the revenue loss of more than 150K US dollar. Please look into this issue on urgent basis."
+        self.state.issue_reported = "As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution."
+
+    @listen(generate_issue_reported_user)
+    def identify_priority_of_issue(self):
+        print("Identifying the priority of the issue reported by user.")
+        result = (
+            PriorityIdentificationCrew()
+            .crew()
+            .kickoff(inputs={"issue_reported": self.state.issue_reported})
+        )
+
+        print(f"Priority of the issue:- {result.raw}")
+        self.state.priority = result.raw
+
+    @listen(identify_priority_of_issue)
+    def save_issue_and_priority(self):
+        print("Saving priority")
+        with open("priority.txt", "w") as f:
+            f.write("Issue reported by user:-\n" + self.state.issue_reported + "\n\nPriority of the issue:- " + self.state.priority)
+
+
+def kickoff():
+    priority_identification_flow = PriorityIdentificationFlow()
+    priority_identification_flow.kickoff()
+
+
+def plot():
+    priority_identification_flow = PriorityIdentificationFlow()
+    priority_identification_flow.plot()
+
+
+if __name__ == "__main__":
+    kickoff()

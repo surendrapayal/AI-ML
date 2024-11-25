@@ -1,0 +1,19 @@
+[project]
+name = "gnoc_automation_flow"
+version = "0.1.0"
+description = "gnoc_automation_flow using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<=3.13"
+dependencies = [
+    "crewai[tools]>=0.80.0,<1.0.0",
+]
+
+[project.scripts]
+kickoff = "gnoc_automation_flow.main:kickoff"
+plot = "gnoc_automation_flow.main:plot"
+#kickoff = "gnoc_automation_flow.main_new:kickoff"
+#plot = "gnoc_automation_flow.main_new:plot"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,4 @@
+Issue reported by user:-
+As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution.
+
+Priority of the issue:- The priority of the issue reported by the user is High due to the keywords "urgent", "critical" and "revenue loss more than 100K US dollar". Additionally, the impact of the issue is significant as around 100 transactions have declined resulting in a revenue loss of around 1000 US dollar.

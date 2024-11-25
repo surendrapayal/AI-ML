@@ -1,0 +1,6 @@
+priority_identification_task:
+  description: >
+    Identify the priority of the issue reported by the user. Need to analyze the issue reported by the user {issue_reported}
+  expected_output: >
+    Priority of the issue reported whether it is High, Medium or Low. Reply only with the keywords like High, Medium or Low.
+  agent: priority_identification_agent
