@@ -1,6 +1,5 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-
 from langchain_openai import ChatOpenAI
 
 from gnoc_automation_flow.types import PriorityModel
@@ -8,7 +7,8 @@ from gnoc_automation_flow.types import PriorityModel
 llm=ChatOpenAI(
     model_name="ollama/llama3.2",
     api_key="your-api-key",
-    base_url= "http://localhost:11434/v1"
+    base_url= "http://localhost:11434/v1",
+    temperature=0.5
 )
 
 @CrewBase
@@ -24,7 +24,8 @@ class PriorityIdentificationCrew():
     def priority_identification_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['priority_identification_agent'],
-            llm=llm
+            llm=llm,
+            output_pydantic=PriorityModel
         )
 
     @task

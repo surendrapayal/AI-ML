@@ -1,7 +1,8 @@
 priority_identification_task:
   description: >
     Need to analyze the issue reported by the user. Identify the priority and description of the issue reported by the user.
-    Here is some additional information about the issue reported by the user:- {issue_reported}
+    Create the Priority with priority and description.
+    Here is full information about the issue reported by the user:- {issue_reported}
   expected_output: >
     priority and description of the issue reported by the user.
   agent: priority_identification_agent
