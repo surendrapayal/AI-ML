@@ -1,7 +1,7 @@
 priority_identification_task:
   description: >
     Need to analyze the issue reported by the user. Identify the priority and description of the issue reported by the user.
-    Create the Priority with priority and description.
+    Create the Priority Model with priority and description.
     Here is full information about the issue reported by the user:- {issue_reported}
   expected_output: >
     priority and description of the issue reported by the user.
