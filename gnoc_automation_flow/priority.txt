@@ -1,4 +1,4 @@
 Issue reported by user:-
 As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution.
 
-Priority of the issue:- The priority of the issue reported by the user is High.
+Priority of the issue:- The priority level of this issue is High due to its urgency and impact. The description of the issue is: "As a user I am not able to perform the transaction from the last 5 minutes" with a revenue loss of around $1000 US dollar, resulting in 100 declined transactions.

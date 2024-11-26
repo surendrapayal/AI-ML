@@ -31,6 +31,8 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         )
 
         print(f"Priority of the issue:- {result.raw}")
+        print(f"Priority:- {result.priority}")
+        print(f"Description:- {result.description}")
         self.state.priority = result.raw
 
     @listen(identify_priority_of_issue)
