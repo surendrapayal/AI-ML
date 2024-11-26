@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
 
 # from gnoc_automation_flow.src.gnoc_automation_flow.crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
-from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
-from .crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
+from crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
+from crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
 
 
 class PriorityIdentificationState(BaseModel):
@@ -49,7 +49,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         result = (
             JiraCreationCrew()
             .crew()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description})
+            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "jira_information" : "Test Issue"})
         )
 
         print(f"Jira ticket creation output:- {result.raw}")

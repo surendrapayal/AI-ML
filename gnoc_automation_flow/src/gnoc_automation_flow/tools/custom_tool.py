@@ -4,7 +4,7 @@ from crewai.tools import BaseTool
 from crewai_tools import tool
 from pydantic import BaseModel, Field
 
-from gnoc_automation_flow.types import JiraModel
+from gnoc_automation_flow.src.gnoc_automation_flow.types import JiraModel
 
 
 class JiraTool:

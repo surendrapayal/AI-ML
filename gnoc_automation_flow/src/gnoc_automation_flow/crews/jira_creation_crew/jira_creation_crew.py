@@ -1,15 +1,15 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
-from gnoc_automation_flow.types import JiraModel
 
-from gnoc_automation_flow.tools.custom_tool import JiraTool
+from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraTool
+
 # from gnoc_automation_flow.JiraTool import jira_tool
 
 # from gnoc_automation_flow.tools.custom_tool import jira_tool
 
 llm=ChatOpenAI(
-    model_name="ollama/llama3.2",
+    model_name="ollama/llama3.1:latest",
     api_key="your-api-key",
     base_url= "http://localhost:11434/v1",
     # temperature=0.5
