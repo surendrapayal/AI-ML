@@ -170,3 +170,4 @@ cython_debug/
 
 priority.txt
 jira.txt
+uv.lock
