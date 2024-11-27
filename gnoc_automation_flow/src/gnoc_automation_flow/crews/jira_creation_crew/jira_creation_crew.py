@@ -7,6 +7,7 @@ from gnoc_automation_flow.types import JiraModel
 # from gnoc_automation_flow.tools.custom_tool import JiraToolNew
 # from gnoc_automation_flow.tools.custom_tool import MyCustomJiraTool
 from gnoc_automation_flow.tools.custom_tool import my_custom_jira_tool_new
+from sympy.physics.units import temperature
 
 # from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraToolNew
 
@@ -18,7 +19,7 @@ llm=ChatOpenAI(
     model_name="ollama/llama3.1:latest",
     api_key="your-api-key",
     base_url= "http://localhost:11434/v1",
-    temperature=0.5
+    temperature=0.8
 )
 
 @CrewBase
@@ -34,7 +35,9 @@ class JiraCreationCrew():
             llm=llm,
             tools=[my_custom_jira_tool_new],
             # output_pydantic=JiraModel,
-            max_iter=2
+            max_iter=2,
+            temperature=0.2,
+
         )
 
     @task
@@ -52,4 +55,5 @@ class JiraCreationCrew():
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
+            memory=False,
         )
