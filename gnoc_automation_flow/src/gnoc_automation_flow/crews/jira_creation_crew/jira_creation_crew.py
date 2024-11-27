@@ -3,16 +3,22 @@ from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
 from gnoc_automation_flow.types import JiraModel
 
-from gnoc_automation_flow.tools.custom_tool import JiraTool
+# from gnoc_automation_flow.tools.custom_tool import JiraTool
+# from gnoc_automation_flow.tools.custom_tool import JiraToolNew
+# from gnoc_automation_flow.tools.custom_tool import MyCustomJiraTool
+from gnoc_automation_flow.tools.custom_tool import my_custom_jira_tool_new
+
+# from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraToolNew
+
 # from gnoc_automation_flow.JiraTool import jira_tool
 
 # from gnoc_automation_flow.tools.custom_tool import jira_tool
 
 llm=ChatOpenAI(
-    model_name="ollama/llama3.2",
+    model_name="ollama/llama3.1:latest",
     api_key="your-api-key",
     base_url= "http://localhost:11434/v1",
-    # temperature=0.5
+    temperature=0.5
 )
 
 @CrewBase
@@ -23,22 +29,19 @@ class JiraCreationCrew():
 
     @agent
     def jira_creation_agent(self) -> Agent:
-        # j_tool = JiraTool.jira_tool()
         return Agent(
             config=self.agents_config['jira_creation_agent'],
             llm=llm,
-            tools=[JiraTool.jira_tool]
-        # tools = [jira_tool()]
+            tools=[my_custom_jira_tool_new],
+            # output_pydantic=JiraModel,
+            max_iter=2
         )
 
     @task
     def jira_creation_task(self) -> Task:
-        # j_tool = JiraTool.jira_tool()
         return Task(
             config=self.tasks_config['jira_creation_task'],
-            # output_pydantic = JiraModel
-            # tools=[jira_tool]
-            tools=[JiraTool.jira_tool]
+            output_pydantic = JiraModel
         )
 
     @crew

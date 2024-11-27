@@ -1,8 +1,12 @@
 #!/usr/bin/env python
+from dataclasses import field
+from typing import List
+
 from pydantic import BaseModel
 
 from crewai.flow.flow import Flow, listen, start
 
+from .types import JiraModel
 # from gnoc_automation_flow.src.gnoc_automation_flow.crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
 from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
 from .crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
@@ -12,7 +16,6 @@ class PriorityIdentificationState(BaseModel):
     priority: str = ""
     description: str = ""
     issue_reported: str = ""
-
 
 class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
 
@@ -53,10 +56,9 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         )
 
         print(f"Jira ticket creation output:- {result.raw}")
-        # print(f"Priority:- {result["priority"]}")
-        # print(f"Description:- {result["description"]}")
-        # self.state.priority = result["priority"]
-        # self.state.description = result["description"]
+        print(f"jiraId:- {result["jiraId"]}")
+        print(f"jiraDescription:- {result["jiraDescription"]}")
+
 
 
 def kickoff():

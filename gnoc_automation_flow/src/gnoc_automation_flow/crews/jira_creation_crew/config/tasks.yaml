@@ -1,7 +1,6 @@
 jira_creation_task:
   description: >
-    Analyze provided information and create the JIRA ticket.
-    Create the Jira Model with jiraId and jiraDescription.
+    Just print about the information and don't do anything.
     Here is full information about the jira ticket:
     Priority:- {priority}
     Description:- {description}
