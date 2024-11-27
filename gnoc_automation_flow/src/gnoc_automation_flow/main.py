@@ -8,8 +8,8 @@ from crewai.flow.flow import Flow, listen, start
 
 from .types import JiraModel
 # from gnoc_automation_flow.src.gnoc_automation_flow.crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
-from crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
-from crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
+from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
+from .crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
 
 
 class PriorityIdentificationState(BaseModel):
