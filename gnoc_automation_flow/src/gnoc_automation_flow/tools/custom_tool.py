@@ -1,10 +1,14 @@
 from crewai_tools import tool
 from pydantic import BaseModel, Field
+# from gnoc_automation_flow.src.gnoc_automation_flow.types import JiraModel
+
 
 class MyCustomJiraToolInput(BaseModel):
     """Input schema for MyCustomJiraTool"""
     priority: str = Field(..., description="Priority of the issue.")
     description: str = Field(..., description="Description of the issue.")
+
+
 
 @tool
 def my_custom_jira_tool_new(custom_input: MyCustomJiraToolInput) -> dict[str, int | str]:
