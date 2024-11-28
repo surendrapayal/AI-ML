@@ -95,7 +95,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         )
 
         print("Email template created", result.raw)
-        self.state.email = result.raw
+        # self.state.email = result.raw
 
     @listen(send_email_gmail)
     def create_status_page_ticket(self):
