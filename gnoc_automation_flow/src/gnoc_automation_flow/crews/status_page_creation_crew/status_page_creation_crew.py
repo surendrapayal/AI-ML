@@ -3,10 +3,8 @@ from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
 from gnoc_automation_flow.types import JiraModel
 
-# from gnoc_automation_flow.tools.custom_tool import JiraTool
-# from gnoc_automation_flow.tools.custom_tool import JiraToolNew
-# from gnoc_automation_flow.tools.custom_tool import MyCustomJiraTool
-from gnoc_automation_flow.tools.custom_tool import my_custom_jira_tool_new
+
+from ...tools.custom_tool import create_status_page_tool
 from sympy.physics.units import temperature
 
 # from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraToolNew
@@ -23,27 +21,27 @@ llm=ChatOpenAI(
 )
 
 @CrewBase
-class JiraCreationCrew():
+class StatusPageCreationCrew():
     """Jira Creation Crew"""
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
     @agent
-    def jira_creation_agent(self) -> Agent:
+    def status_page_creation_agent(self) -> Agent:
         return Agent(
-            config=self.agents_config['jira_creation_agent'],
+            config=self.agents_config['status_page_creation_agent'],
             llm=llm,
             # output_pydantic=JiraModel,
-            max_iter=1,
             temperature=0,
+
         )
 
     @task
-    def jira_creation_task(self) -> Task:
+    def status_page_creation_task(self) -> Task:
         return Task(
-            config=self.tasks_config['jira_creation_task'],
-            output_pydantic = JiraModel,
-            tools=[my_custom_jira_tool_new],
+            config=self.tasks_config['status_page_creation_task'],
+            tools=[create_status_page_tool],
+            output_pydantic = JiraModel
         )
 
     @crew

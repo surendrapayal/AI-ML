@@ -8,6 +8,7 @@ class PriorityModel(BaseModel):
     description: str
 
 class JiraModel(BaseModel):
-    jiraId: int = Field(default = 54321)
-    jiraDescription: str = Field(default = "Temporary Description")
+    jira_id: str = Field(default = "")
+    description: str = Field(default = "")
+    priority: str = Field(default = "")
     my_list: list = field(default_factory=list)
