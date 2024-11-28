@@ -9,7 +9,14 @@ from crewai_tools import tool
 from ..model.status_page import Incident
 from sympy import print_mathml
 import os
-
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+from datetime import datetime, timedelta
+from email.mime.text import MIMEText
+from google.oauth2.credentials import Credentials
+import base64
+import pytz
 from ..types import JiraModel
 
 # loading variables from .env file
@@ -135,3 +142,120 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
     except Exception as e:
         print(f"Error in create_status_page_tool: {e}")
         raise
+
+class MyCustomGoogleInput(BaseModel):
+    """Input schema for MyCustomJiraTool"""
+    subject: str = Field(..., description="email subject.")
+    to: list|dict = Field(..., description="email to.")
+    body: str = Field(..., description="email body.")
+
+
+@tool
+def my_custom_email_calendar_tool_new(custom_input: MyCustomGoogleInput):
+    """This tool is used to draft an email and calendar invite."""
+    try:
+
+        print(f"email subject inside email tool:- {custom_input.subject}")
+        print(f"email to inside email tool:- {custom_input.to}")
+        print(f"email body inside email tool:- {custom_input.body}")
+
+        # Authenticate and get credentials
+        # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+        # creds = flow.run_local_server(port=0)
+        creds = None
+        if os.path.exists("gmail_token.json"):
+            creds = Credentials.from_authorized_user_file("gmail_token.json", ["https://www.googleapis.com/auth/gmail.send"])
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+                creds = flow.run_local_server(port=0)
+            with open('gmail_token.json', 'w') as token:
+                token.write(creds.to_json())
+
+
+        gmail_service = build("gmail", "v1", credentials=creds)
+
+        # Create a MIMEText email message
+        message = MIMEText(custom_input.body)
+        message['to'] = "; ".join(custom_input.to)
+        # message['to'] = custom_input.to
+        message['from'] = "rahulurane.ai@gmail.com"
+        message['subject'] = custom_input.subject
+        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()  # Encode the email
+
+        # Send email
+        result = gmail_service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
+
+        print(f"Email sent successfully! Message ID: {result['id']}")
+
+        creds = None
+        if os.path.exists("calendar_token.json"):
+            creds = Credentials.from_authorized_user_file("calendar_token.json", ["https://www.googleapis.com/auth/gmail.send"])
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+                creds = flow.run_local_server(port=0)
+            with open('calendar_token.json', 'w') as token:
+                token.write(creds.to_json())
+
+        timezone = pytz.timezone("Asia/Kolkata")
+        current_time = datetime.now(timezone)
+        future_time = current_time + timedelta(hours=2)
+        formatted_time = current_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        start = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
+        formatted_time = future_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        end = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
+
+        calendar_service = build('calendar', 'v3', credentials=creds)
+
+        event = {
+            "summary": custom_input.subject,
+            "location": "Virtual",
+            "description": custom_input.body,
+            "start": {
+                "dateTime": start,  # Start time in ISO 8601
+                "timeZone": "Asia/Kolkata",
+            },
+            "end": {
+                "dateTime": end,  # End time in ISO 8601
+                "timeZone": "Asia/Kolkata",
+            },
+            "attendees": [
+                # {"email": custom_input.to.split(";")[0].strip()},
+                # {"email": custom_input.to.split(";")[1].strip()},
+                # {"email": custom_input.to.split(";")[2].strip()},
+                {"email": custom_input.to[0].strip()},
+                {"email": custom_input.to[1].strip()},
+                {"email": custom_input.to[2].strip()},
+            ],
+            "conferenceData": {
+                "createRequest": {
+                    "requestId": "randomString123",
+                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
+                },
+            },
+            "reminders": {
+                "useDefault": False,
+                "overrides": [
+                    {"method": "email", "minutes": 24 * 60},
+                    {"method": "popup", "minutes": 10},
+                ],
+            },
+        }
+        # Create the event
+        event_calendar = calendar_service.events().insert(
+            calendarId="primary",
+            body=event,
+            conferenceDataVersion=1
+        ).execute()
+
+        print(f"Event created: {event_calendar.get('htmlLink')}")
+        return "email and google meet invitation sent successfully"
+    except Exception as e:
+        print(f"Failed to create ticket: {e}")

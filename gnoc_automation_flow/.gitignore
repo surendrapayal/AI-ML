@@ -171,3 +171,5 @@ cython_debug/
 priority.txt
 jira.txt
 uv.lock
+calendar_token.json
+gmail_token.json
