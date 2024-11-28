@@ -2,7 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
 # from demo_flow.types import my_custom_email_calendar_tool_new
-from ...tools.custom_tool import my_custom_email_calendar_tool_new
+from ...tools.custom_tool import my_custom_email_calendar_tool
 
 # from demo_flow.tools.custom_tool import MyCustomEmailInput
 
@@ -48,7 +48,7 @@ class GoogleSendCrew():
 	def send_email_calendar(self) -> Task:
 		return Task(
 			config=self.tasks_config['send_email_calendar'],
-			tools=[my_custom_email_calendar_tool_new],
+			tools=[my_custom_email_calendar_tool],
 		)
 
 	@crew

@@ -1,6 +1,6 @@
 send_email_calendar:
   description: >
-    Conduct a comprehensive analysis of the email provided. Draft an email using below information. Please use the "to" field as list argument.
+    Conduct a comprehensive analysis of the email provided. Draft an email using below information. Please use the "to" field as list data type.
     EMAIL SUBJECT: {subject}
     EMAIL TO: {to}
     EMAIL BODY: {body}

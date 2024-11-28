@@ -146,12 +146,12 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
 class MyCustomGoogleInput(BaseModel):
     """Input schema for MyCustomJiraTool"""
     subject: str = Field(..., description="email subject.")
-    to: list|dict = Field(..., description="email to.")
+    to: list = Field(..., description="email to.")
     body: str = Field(..., description="email body.")
 
 
 @tool
-def my_custom_email_calendar_tool_new(custom_input: MyCustomGoogleInput):
+def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
     """This tool is used to draft an email and calendar invite."""
     try:
 

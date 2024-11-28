@@ -18,7 +18,7 @@ class PriorityIdentificationState(BaseModel):
     issue_reported: str = ""
     jira_id: str = ""
     subject: str = ""
-    to: list = ""
+    to: list = None
     body: str = ""
 
 class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
