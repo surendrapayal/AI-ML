@@ -7,7 +7,7 @@ write_email:
     AI Team
     GNOC Project
     Below are the information that need you can refer. 
-    JiraId:- {jiraId}
+    jira_id:- {jira_id}
     Priority:- {priority}
     Description:- {description}
     Project:- {project}

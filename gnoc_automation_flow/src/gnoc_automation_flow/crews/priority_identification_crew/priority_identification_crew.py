@@ -2,7 +2,8 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
 
-from gnoc_automation_flow.types import PriorityModel
+# from gnoc_automation_flow.types import PriorityModel
+from ...types import PriorityModel
 
 llm=ChatOpenAI(
     model_name="ollama/llama3.1:latest",

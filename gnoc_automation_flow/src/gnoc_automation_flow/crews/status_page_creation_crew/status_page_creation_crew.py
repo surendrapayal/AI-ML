@@ -1,9 +1,8 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from langchain_openai import ChatOpenAI
-from gnoc_automation_flow.types import JiraModel
-
-
+# from gnoc_automation_flow.types import JiraModel
+from ...types import JiraModel
 from ...tools.custom_tool import create_status_page_tool
 from sympy.physics.units import temperature
 

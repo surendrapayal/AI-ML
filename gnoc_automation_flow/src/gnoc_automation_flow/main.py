@@ -73,7 +73,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         result = (
             GoogleCrew()
             .crew()
-            .kickoff(inputs={"jiraId": self.state.jiraId, "priority": "High", "description": self.state.description,
+            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": "High", "description": self.state.description,
                              "project": "GNOC"})
         )
 
