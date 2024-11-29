@@ -88,6 +88,8 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
     Create a new status page. From the Incident map below variables from the input:
         jira_id = jira_id
         priority = priority
+        summary =summary
+        description=description
     """
     print("$$$$$$$$$$$$$$$$$$$$$$$$$\n\n")
     print(custom_input)
