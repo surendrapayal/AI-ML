@@ -15,6 +15,7 @@ from .crews.google_crew.google_crew import GoogleCrew
 class PriorityIdentificationState(BaseModel):
     priority: str = ""
     description: str = ""
+    summary: str = ""
     issue_reported: str = ""
     jira_id: str = ""
     subject: str = ""
@@ -40,9 +41,11 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
 
         # print(f"Priority of the issue:- {result.raw}")
         print(f"Priority:- {result["priority"]}")
+        print(f"summary:- {result["summary"]}")
         print(f"Description:- {result["description"]}")
         self.state.priority = result["priority"]
         self.state.description = result["description"]
+        self.state.summary= result["summary"]
 
     @listen(identify_priority_of_issue)
     def save_issue_and_priority(self):
@@ -56,7 +59,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         result = (
             JiraCreationCrew()
             .crew()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description})
+            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "summary": self.state.summary})
         )
 
         print(f"Jira ticket creation output:- {result.raw}")
@@ -88,10 +91,11 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
     @listen(create_email_template)
     def send_email_gmail(self):
         print("Send email and calendar invite")
+        subject_str=f"{self.state.jira_id} - {self.state.summary}"
         result = (
             GoogleSendCrew()
             .crew()
-            .kickoff(inputs={"to": self.state.to, "subject": self.state.subject, "body": self.state.body})
+            .kickoff(inputs={"to": self.state.to, "subject": subject_str, "body": self.state.body})
         )
 
         print("Email template created", result.raw)
@@ -104,7 +108,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
             StatusPageCreationCrew()
             .crew()
             #.kickoff()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "jira_id": self.state.jira_id})
+            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "jira_id": self.state.jira_id, "summary": self.state.summary})
         )
         print("\n\n################################\n\n")
         print(f"Status Page Creation Output:- {result}")

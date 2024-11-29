@@ -6,5 +6,6 @@ jira_creation_agent:
     Here is full information about the jira ticket:
     Priority:- {priority}
     Description:- {description}
+    Summary:- {summary}
   backstory: >
     You are a JIRA admin. Your primary responsibility is to create the JIRA ticket with provided information.
