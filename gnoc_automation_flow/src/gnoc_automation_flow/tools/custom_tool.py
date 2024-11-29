@@ -184,9 +184,11 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
 
         # Create a MIMEText email message
         message = MIMEText(custom_input.body)
-        message['to'] = "; ".join(custom_input.to)
+        # message['to'] = "; ".join(custom_input.to)
+        message['to'] = os.getenv("TO_EMAIL")
         # message['to'] = custom_input.to
-        message['from'] = "rahulurane.ai@gmail.com"
+        # message['from'] = "rahulurane.ai@gmail.com"
+        message['from'] = email
         message['subject'] = custom_input.subject
         raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()  # Encode the email
 
@@ -234,9 +236,12 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
                 # {"email": custom_input.to.split(";")[0].strip()},
                 # {"email": custom_input.to.split(";")[1].strip()},
                 # {"email": custom_input.to.split(";")[2].strip()},
-                {"email": custom_input.to[0].strip()},
-                {"email": custom_input.to[1].strip()},
-                {"email": custom_input.to[2].strip()},
+                # {"email": custom_input.to[0].strip()},
+                # {"email": custom_input.to[1].strip()},
+                # {"email": custom_input.to[2].strip()},
+                {"email": os.getenv("TO_EMAIL").split(";")[0].strip()},
+                {"email": os.getenv("TO_EMAIL").split(";")[1].strip()},
+                {"email": os.getenv("TO_EMAIL").split(";")[2].strip()},
             ],
             "conferenceData": {
                 "createRequest": {
