@@ -68,6 +68,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         self.state.jira_id = result["jira_id"]
         self.state.priority = result["priority"]
         self.state.description = result["description"]
+        self.state.summary = result["summary"]
 
     @listen(create_jira_ticket)
     def create_email_template(self):
