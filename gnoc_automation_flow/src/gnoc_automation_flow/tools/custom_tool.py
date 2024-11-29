@@ -38,6 +38,7 @@ class MyCustomJiraToolInput(BaseModel):
     priority: str = Field(..., description="Priority of the issue.")
     description: str = Field(..., description="Description of the issue.")
     jira_id: str = Field("JIRA-123", description="")
+    summary: str = Field("", description="")
 
 
 
@@ -48,13 +49,14 @@ def my_custom_jira_tool_new(custom_input: MyCustomJiraToolInput):
         if this method is executed then stop
     """
     print(f"priority inside jira tool:- {custom_input.priority}")
+    print(f"summary inside jira tool:- {custom_input.summary}")
     print(f"description inside jira tool:- {custom_input.description}")
     # Create the Jira issue payload (JSON body)
     issue_data = {
          'project': {
              'id': '10000'
             },
-            'summary': f'Bug summary example {custom_input.priority}',
+            'summary': f'{custom_input.priority} - {custom_input.summary}',
             'description': custom_input.description,
             'issuetype': {
                 'name': issue_type
@@ -70,7 +72,8 @@ def my_custom_jira_tool_new(custom_input: MyCustomJiraToolInput):
         result_payload = {
             "jira_d": response.key,
             "description": custom_input.description,
-            "priority": custom_input.priority
+            "priority": custom_input.priority,
+            "summary": custom_input.summary
         }
     except Exception as e:
         print(f"Failed to create jira ticket: {e}")
@@ -92,7 +95,7 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         # Example of creating an Incident object
         incident_data = {
             "incident": {
-                "name": f"{custom_input.jira_id} - {custom_input.priority}",
+                "name": f"{custom_input.jira_id} - {custom_input.priority} - {custom_input.summary}",
                 "status": "investigating",
                 "impact_override": "none",
                 "scheduled_remind_prior": False,
@@ -130,7 +133,8 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "jira_d": custom_input.jira_id,
                 "description": custom_input.description,
                 "priority": custom_input.priority,
-                "status_io_id": custom_input.priority
+                "status_io_id": custom_input.priority,
+                "summary": custom_input.summary
             }
             return response.json()
         except requests.exceptions.RequestException as e:
