@@ -17,5 +17,5 @@ class JiraModel(BaseModel):
 
 class EmailTemplate(BaseModel):
     subject: str
-    to: list
+    # to: list
     body: str

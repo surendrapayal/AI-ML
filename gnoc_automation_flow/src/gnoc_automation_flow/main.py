@@ -19,7 +19,7 @@ class PriorityIdentificationState(BaseModel):
     issue_reported: str = ""
     jira_id: str = ""
     subject: str = ""
-    to: list = None
+    # to: list = None
     body: str = ""
 
 class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
@@ -96,20 +96,23 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
 
         print("result.raw Email template created", result.raw)
         print("Email subject", result["subject"])
-        print("Email to", result["to"])
+        # print("Email to", result["to"])
         print("Email body", result["body"])
-        self.state.to = result["to"]
+        # self.state.to = result["to"]
         self.state.subject = result["subject"]
         self.state.body = result["body"]
 
     @listen(create_email_template)
     def send_email_gmail(self):
         print("Send email and calendar invite")
-        subject_str=f"{self.state.jira_id} - {self.state.summary}"
+        subject_str = f"{self.state.jira_id} - {self.state.summary}"
+        print(f"Email body:- {self.state.body}")
+        print(f"Subject email object:- {self.state.jira_id} - {self.state.summary}")
         result = (
             GoogleSendCrew()
             .crew()
-            .kickoff(inputs={"to": self.state.to, "subject": subject_str, "body": self.state.body})
+            # .kickoff(inputs={"to": to_list, "subject": subject_str, "body": self.state.body})
+            .kickoff(inputs={"subject": subject_str, "body": self.state.body})
         )
 
         print("Email template created", result.raw)

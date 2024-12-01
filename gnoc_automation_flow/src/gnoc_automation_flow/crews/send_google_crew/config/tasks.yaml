@@ -1,9 +1,8 @@
 send_email_calendar:
   description: >
-    Conduct a comprehensive analysis of the email provided. Draft an email using below information. Please use the "to" field as list data type.
+    Conduct a comprehensive analysis of the email provided. You have provided subject and body of the email. Draft an email using below information.
     EMAIL SUBJECT: {subject}
-    EMAIL TO: {to}
     EMAIL BODY: {body}
   expected_output: >
-    A well crafted email for the customer that addresses their issues and concerns.
+    A well crafted email should be send to the  customer that addresses their issues and concerns.
   agent: email_calendar_send

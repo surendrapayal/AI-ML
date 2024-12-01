@@ -151,18 +151,18 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
 
 class MyCustomGoogleInput(BaseModel):
     """Input schema for MyCustomJiraTool"""
-    subject: str = Field(..., description="email subject.")
-    to: list = Field(..., description="email to.")
-    body: str = Field(..., description="email body.")
+    subject: str = Field("", description="email subject.")
+    # to: list = Field(..., description="email to.")
+    body: str = Field("", description="email body.")
 
 
 @tool
 def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
     """This tool is used to draft an email and calendar invite."""
     try:
-
+        to = os.getenv("TO_EMAIL")
         print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email to inside email tool:- {custom_input.to}")
+        print(f"email to inside email tool:- {to}")
         print(f"email body inside email tool:- {custom_input.body}")
 
         # Authenticate and get credentials
@@ -187,7 +187,7 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
         # Create a MIMEText email message
         message = MIMEText(custom_input.body)
         # message['to'] = "; ".join(custom_input.to)
-        message['to'] = os.getenv("TO_EMAIL")
+        message['to'] = to
         # message['to'] = custom_input.to
         # message['from'] = "rahulurane.ai@gmail.com"
         message['from'] = email
@@ -198,6 +198,15 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
         result = gmail_service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
 
         print(f"Email sent successfully! Message ID: {result['id']}")
+
+
+        timezone = pytz.timezone("Asia/Kolkata")
+        current_time = datetime.now(timezone)
+        future_time = current_time + timedelta(hours=2)
+        formatted_time = current_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        start = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
+        formatted_time = future_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        end = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
 
         creds = None
         if os.path.exists("calendar_token.json"):
@@ -211,14 +220,6 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
                 creds = flow.run_local_server(port=0)
             with open('calendar_token.json', 'w') as token:
                 token.write(creds.to_json())
-
-        timezone = pytz.timezone("Asia/Kolkata")
-        current_time = datetime.now(timezone)
-        future_time = current_time + timedelta(hours=2)
-        formatted_time = current_time.strftime("%Y-%m-%dT%H:%M:%S%z")
-        start = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
-        formatted_time = future_time.strftime("%Y-%m-%dT%H:%M:%S%z")
-        end = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
 
         calendar_service = build('calendar', 'v3', credentials=creds)
 

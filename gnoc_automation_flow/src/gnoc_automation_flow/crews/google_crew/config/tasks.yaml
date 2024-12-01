@@ -2,7 +2,7 @@ write_email:
   description: >
     Analyze the information shared to you and need to create the email template based on the information.
     You need to write email in a thoughtful and helpful way. The email should be polite and it should show the urgency based on the priority if the issue.
-    Email draft should contain the to, subject, body fields. Please use the surendrapayal@gmail.com, rahulurane@gmail.com and rishi154@gmail.com in the to field and make sure its data type is list. Use the below signature in the email body.
+    Email draft should contain the subject and body fields. Use the below signature in the email body.
     Best regards,
     AI Team
     GNOC Project
@@ -12,5 +12,5 @@ write_email:
     Description:- {description}
     Project:- {project}
   expected_output: >
-    Email draft should be generated from the information shared to you.
+    subject and body of the draft email should be generated from the information shared to you.
   agent: email_writer
