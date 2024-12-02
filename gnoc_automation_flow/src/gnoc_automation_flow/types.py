@@ -13,7 +13,7 @@ class JiraModel(BaseModel):
     description: str = Field(default = "")
     priority: str = Field(default = "")
     summary: str = Field(default="")
-    my_list: list = field(default_factory=list)
+    # my_list: list = field(default_factory=list)
 
 class EmailTemplate(BaseModel):
     subject: str

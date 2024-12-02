@@ -77,7 +77,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
             StatusPageCreationCrew()
             .crew()
             #.kickoff()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "jira_id": self.state.jira_id, "summary": self.state.summary})
+            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": self.state.priority, "description": self.state.description, "summary": self.state.summary})
         )
         print("\n\n################################\n\n")
         print(f"Status Page Creation Output:- {result}")
@@ -90,7 +90,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         result = (
             GoogleCrew()
             .crew()
-            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": "High", "description": self.state.description,
+            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": self.state.priority, "description": self.state.description,
                              "project": "GNOC"})
         )
 
