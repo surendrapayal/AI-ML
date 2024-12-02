@@ -6,6 +6,8 @@ import requests
 from dotenv import load_dotenv
 from jira import JIRA
 from crewai_tools import tool
+from pypdf import PdfReader
+
 from ..model.status_page import Incident
 from sympy import print_mathml
 import os
@@ -271,3 +273,23 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
         return "email and google meet invitation sent successfully"
     except Exception as e:
         print(f"Failed to create ticket: {e}")
+
+@tool
+def pdf_reader():
+    "Read the pdf file and lear form the text from the file and decide the priority "
+
+    reader = PdfReader('IT Service Management Priority Definitions v1.pdf')
+
+
+    # printing number of pages in pdf file
+    print(len(reader.pages))
+    text=""
+    for page in range(len(reader.pages)):
+        # creating a page object
+        pageObj = reader.pages[page]
+        # extracting text from page
+
+        text+=pageObj.extract_text()
+        print("File Read successfully ...")
+    # pdf_reader = FileReadTool(file_path="IT_Service_Management_Priority_Definitions.pdf", encoding="iso-8859-1")
+    return text
