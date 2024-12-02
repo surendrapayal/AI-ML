@@ -1,17 +1,17 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 # from demo_flow.types import my_custom_email_calendar_tool_new
 from ...tools.custom_tool import my_custom_email_calendar_tool
 
 # from demo_flow.tools.custom_tool import MyCustomEmailInput
 
-llm=ChatOpenAI(
-    model_name="ollama/llama3.1:latest",
-    api_key="your-api-key",
-    base_url= "http://localhost:11434/v1",
-    # temperature=0.5
-)
+# llm=ChatOpenAI(
+#     model_name="ollama/llama3.1:latest",
+#     api_key="your-api-key",
+#     base_url= "http://localhost:11434/v1",
+#     # temperature=0.5
+# )
 
 @CrewBase
 class GoogleSendCrew():
@@ -40,7 +40,7 @@ class GoogleSendCrew():
 	def email_calendar_send(self) -> Agent:
 		return Agent(
 			config=self.agents_config['email_calendar_send'],
-			llm=llm,
+			# llm=llm,
 			max_iter=1
 		)
 

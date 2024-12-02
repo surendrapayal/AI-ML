@@ -11,6 +11,7 @@ write_email:
     Priority:- {priority}
     Description:- {description}
     Project:- {project}
+    Summary:- {summary}
   expected_output: >
-    subject and body of the draft email should be generated from the information shared to you.
+    subject, summary, jira_id and body of the draft email should be generated from the information shared to you.
   agent: email_writer

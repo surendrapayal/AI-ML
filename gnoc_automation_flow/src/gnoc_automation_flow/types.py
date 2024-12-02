@@ -19,3 +19,5 @@ class EmailTemplate(BaseModel):
     subject: str
     # to: list
     body: str
+    summary: str
+    jira_id: str

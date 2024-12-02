@@ -1,6 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 # from gnoc_automation_flow.types import JiraModel
 from ...types import JiraModel
 
@@ -17,12 +17,12 @@ from sympy.physics.units import temperature
 
 # from gnoc_automation_flow.tools.custom_tool import jira_tool
 
-llm=ChatOpenAI(
-    model_name="ollama/llama3.1:latest",
-    api_key="your-api-key",
-    base_url= "http://localhost:11434/v1",
-    temperature=0
-)
+# llm=ChatOpenAI(
+#     model_name="ollama/llama3.1:latest",
+#     api_key="your-api-key",
+#     base_url= "http://localhost:11434/v1",
+#     temperature=0
+# )
 
 @CrewBase
 class JiraCreationCrew():
@@ -34,7 +34,7 @@ class JiraCreationCrew():
     def jira_creation_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['jira_creation_agent'],
-            llm=llm,
+            # llm=llm,
             # output_pydantic=JiraModel,
             max_iter=1,
             temperature=0,

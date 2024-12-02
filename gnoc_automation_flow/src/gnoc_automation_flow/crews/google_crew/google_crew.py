@@ -1,17 +1,17 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 # from demo_flow.tools.custom_tool import my_custom_email_tool_new
 
 # from demo_flow.types import EmailTemplate
 from ...types import EmailTemplate
 
-llm=ChatOpenAI(
-    model_name="ollama/llama3.1:latest",
-    api_key="your-api-key",
-    base_url= "http://localhost:11434/v1",
-    temperature=0.5
-)
+# llm=ChatOpenAI(
+#     model_name="ollama/llama3.1:latest",
+#     api_key="your-api-key",
+#     base_url= "http://localhost:11434/v1",
+#     temperature=0.5
+# )
 
 @CrewBase
 class GoogleCrew():
@@ -24,7 +24,7 @@ class GoogleCrew():
 	def email_writer(self) -> Agent:
 		return Agent(
 			config=self.agents_config['email_writer'],
-			llm=llm,
+			# llm=llm,
 			max_iter=1
 			# allow_delegation=True,
 			# verbose=True

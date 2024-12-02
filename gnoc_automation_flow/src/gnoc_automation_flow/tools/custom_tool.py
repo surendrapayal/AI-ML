@@ -1,4 +1,4 @@
-
+import json
 from crewai_tools import tool
 from pydantic import BaseModel, Field
 import requests
@@ -40,7 +40,7 @@ class MyCustomJiraToolInput(BaseModel):
     priority: str = Field(..., description="Priority of the issue.")
     description: str = Field(..., description="Description of the issue.")
     jira_id: str = Field("JIRA-123", description="")
-    summary: str = Field("", description="")
+    summary: str = Field("DUMMY SUMMARY", description="")
 
 
 
@@ -77,6 +77,7 @@ def my_custom_jira_tool_new(custom_input: MyCustomJiraToolInput):
             "priority": custom_input.priority,
             "summary": custom_input.summary
         }
+        result_payload = json.dumps(result_payload)
     except Exception as e:
         print(f"Failed to create jira ticket: {e}")
     print(f"JSON Output:- {result_payload}")
@@ -140,7 +141,8 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "status_io_id": custom_input.priority,
                 "summary": custom_input.summary
             }
-            return response.json()
+            result_payload = json.dumps(result_payload)
+            return result_payload
         except requests.exceptions.RequestException as e:
             print(f"Failed to create status page: {e}")
             raise
@@ -153,14 +155,14 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
 
 class MyCustomGoogleInput(BaseModel):
     """Input schema for MyCustomJiraTool"""
-    subject: str = Field("", description="email subject.")
+    subject: str = Field("DUMMY SUBJECT", description="email subject.")
     # to: list = Field(..., description="email to.")
-    body: str = Field("", description="email body.")
+    body: str = Field("DUMMY BODY", description="email body.")
 
 
 @tool
 def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
-    """This tool is used to draft an email and calendar invite."""
+    """This tool is used to send an email and calendar invite."""
     try:
         to = os.getenv("TO_EMAIL")
         print(f"email subject inside email tool:- {custom_input.subject}")
