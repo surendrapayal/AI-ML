@@ -227,6 +227,12 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
 
         calendar_service = build('calendar', 'v3', credentials=creds)
 
+        # attendees = {
+        #     "attendees": [{"email": emailId} for emailId in os.getenv("TO_EMAIL").split(";")]
+        # }
+        attendees = [{"email": emailId} for emailId in os.getenv("TO_EMAIL").split(";")]
+        # attendees = json.dumps(attendees)
+
         event = {
             "summary": custom_input.subject,
             "location": "Virtual",
@@ -239,17 +245,18 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
                 "dateTime": end,  # End time in ISO 8601
                 "timeZone": "Asia/Kolkata",
             },
-            "attendees": [
-                # {"email": custom_input.to.split(";")[0].strip()},
-                # {"email": custom_input.to.split(";")[1].strip()},
-                # {"email": custom_input.to.split(";")[2].strip()},
-                # {"email": custom_input.to[0].strip()},
-                # {"email": custom_input.to[1].strip()},
-                # {"email": custom_input.to[2].strip()},
-                {"email": os.getenv("TO_EMAIL").split(";")[0].strip()},
-                {"email": os.getenv("TO_EMAIL").split(";")[1].strip()},
-                {"email": os.getenv("TO_EMAIL").split(";")[2].strip()},
-            ],
+            "attendees": attendees,
+            # "attendees": [
+            #     # {"email": custom_input.to.split(";")[0].strip()},
+            #     # {"email": custom_input.to.split(";")[1].strip()},
+            #     # {"email": custom_input.to.split(";")[2].strip()},
+            #     # {"email": custom_input.to[0].strip()},
+            #     # {"email": custom_input.to[1].strip()},
+            #     # {"email": custom_input.to[2].strip()},
+            #     {"email": os.getenv("TO_EMAIL").split(";")[0].strip()},
+            #     {"email": os.getenv("TO_EMAIL").split(";")[1].strip()},
+            #     {"email": os.getenv("TO_EMAIL").split(";")[2].strip()},
+            # ],
             "conferenceData": {
                 "createRequest": {
                     "requestId": "randomString123",
@@ -264,6 +271,7 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
                 ],
             },
         }
+
         # Create the event
         event_calendar = calendar_service.events().insert(
             calendarId="primary",
