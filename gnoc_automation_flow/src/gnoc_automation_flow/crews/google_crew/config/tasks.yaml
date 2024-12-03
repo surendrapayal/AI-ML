@@ -15,3 +15,21 @@ write_email:
   expected_output: >
     subject, summary, jira_id and body of the draft email should be generated from the information shared to you.
   agent: email_writer
+
+write_email_no_data:
+  description: >
+    Analyze the information shared to you and need to create the email template based on the information.
+    You need to write email in a thoughtful and helpful way. The email should be polite and it should show the urgency based on the priority if the issue.
+    Do not include any quantitative data such as amount, number of transactions, number customers of etc.
+    Email draft should contain the subject and body fields. Use the below signature in the email body.
+    Best regards,
+    AI Team
+    GNOC Project
+    Below are the information that need you can refer. 
+    jira_id:- {jira_id}
+    Priority:- {priority}
+    Description:- {description}
+    Project:- {project}
+  expected_output: >
+    Email draft should be generated from the information shared to you.
+  agent: email_writer

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+import json
 from dataclasses import field
 from typing import List
 
 from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
+
+from .crews.send_google_no_data_crew.send_google_no_data_crew import GoogleSendNoDataCrew
 from .crews.status_page_creation_crew.status_page_creation_crew import  StatusPageCreationCrew
 from .types import JiraModel
 # from gnoc_automation_flow.src.gnoc_automation_flow.crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
@@ -21,6 +24,10 @@ class PriorityIdentificationState(BaseModel):
     subject: str = ""
     # to: list = None
     body: str = ""
+    subject1: str = ""
+    subject2: str = ""
+    body1: str = ""
+    body2: str = ""
 
 class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
 
@@ -109,25 +116,61 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         self.state.summary = result["summary"]
         self.state.subject = result["subject"]
         self.state.body = result["body"]
+        # self.state.subject1 = json.dumps(list(enumerate(result))[3][1][1][0].json_dict["subject"])
+        # self.state.body1 = json.dumps(list(enumerate(result))[3][1][1][0].json_dict["body"])
+
+        i = 0
+        for task_output in list(enumerate(result))[3][1][1]:
+            print("Attributes of TaskOutput object:")
+            for attr, value in vars(task_output).items():
+                if attr == "pydantic":
+                    print(f"{attr}: {value.subject}")
+                    print(f"{attr}: {value.body}")
+                    if i == 0:
+                        self.state.subject1 = value.subject
+                        self.state.body1 = value.body
+                        i = i + 1
+                    else:
+                        self.state.subject2 = value.subject
+                        self.state.body2 = value.body
+
+        # self.state.subject1 = list(enumerate(result))[3][1][1][0].json_dict["subject"]
+        # self.state.body1 = list(enumerate(result))[3][1][1][0].json_dict["body"]
+        #
+        # self.state.subject2 = list(enumerate(result))[3][1][1][1].json_dict["subject"]
+        # self.state.body2 = list(enumerate(result))[3][1][1][1].json_dict["body"]
 
     @listen(create_email_template)
     def send_email_gmail(self):
         print("Send email and calendar invite")
-        # subject_str = f"{self.state.jira_id} - {self.state.summary}"
-        print(f"Email body:- {self.state.body}")
-        print(f"Subject email object:- {self.state.jira_id} - {self.state.summary}")
-        # print(f"subject_str:- {subject_str}")
+        print(f"Email subject1:- {self.state.subject1}")
+        print(f"Email body1:- {self.state.body1}")
         result = (
             GoogleSendCrew()
             .crew()
-            # .kickoff(inputs={"to": to_list, "subject": subject_str, "body": self.state.body})
-            # .kickoff(inputs={"subject": subject_str, "body": self.state.body})
-            .kickoff(inputs={"subject": self.state.jira_id + " - " + self.state.summary, "body": self.state.body})
+            # .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1, "flag": False})
+            .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1})
         )
 
-        print("Email template created", result.raw)
-        # self.state.email = result.raw
+        print(f"Email subject2:- {self.state.subject2}")
+        print(f"Email body2:- {self.state.body2}")
+        self.state.subject2 = self.state.subject2
+        self.state.body2 = self.state.body2
+        print("result template created", result.raw)
 
+    @listen(send_email_gmail)
+    def send_email_no_data_gmail(self):
+        print("Send email and calendar invite")
+        print(f"send_email_no_data_gmail :: Email subject2:- {self.state.subject2}")
+        print(f"send_email_no_data_gmail  :: Email body2:- {self.state.body2}")
+        result = (
+            GoogleSendNoDataCrew()
+            .crew()
+            # .kickoff(inputs={"subject": self.state.subject2, "body": self.state.body2, "flag": True})
+            .kickoff(inputs={"subject": self.state.subject2, "body": self.state.body2})
+        )
+
+        print("result template created", result.raw)
 
 
 def kickoff():

@@ -35,6 +35,15 @@ class GoogleCrew():
 		return Task(
 			config=self.tasks_config['write_email'],
 			output_pydantic=EmailTemplate
+			# output_json = EmailTemplate
+		)
+
+	@task
+	def write_email_no_data(self) -> Task:
+		return Task(
+			config=self.tasks_config['write_email_no_data'],
+			# output_pydantic=EmailTemplate,
+			output_pydantic=EmailTemplate
 		)
 
 	# @agent

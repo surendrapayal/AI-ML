@@ -158,128 +158,45 @@ class MyCustomGoogleInput(BaseModel):
     subject: str = Field("DUMMY SUBJECT", description="email subject.")
     # to: list = Field(..., description="email to.")
     body: str = Field("DUMMY BODY", description="email body.")
+    flag: bool = Field(False, description="email flag.")
+    # subject1: str = Field(..., description="email subject.")
+    # body1: str = Field(..., description="email body.")
+    # subject2: str = Field(..., description="email subject.")
+    # body2: str = Field(..., description="email body.")
 
 
 @tool
 def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
     """This tool is used to send an email and calendar invite."""
     try:
-        to = os.getenv("TO_EMAIL")
+        to = os.getenv("INSENSITIVE_TO_EMAIL")
         print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email to inside email tool:- {to}")
+        print(f"email flag  inside email tool:- {custom_input.flag}")
         print(f"email body inside email tool:- {custom_input.body}")
 
-        # Authenticate and get credentials
-        # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
-        # creds = flow.run_local_server(port=0)
-        creds = None
-        if os.path.exists("gmail_token.json"):
-            creds = Credentials.from_authorized_user_file("gmail_token.json", ["https://www.googleapis.com/auth/gmail.send"])
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
-                creds = flow.run_local_server(port=0)
-            with open('gmail_token.json', 'w') as token:
-                token.write(creds.to_json())
+        print(f"email to inside email tool:- {to}")
+        send_email(to, email, custom_input.subject, custom_input.body)
+        # send_email(to, email, custom_input.subject2, custom_input.body2)
 
+        send_gmeet_invite(to, email, custom_input.subject, custom_input.body)
+        # send_gmeet_invite(to, email, custom_input.subject2, custom_input.body2)
 
-        gmail_service = build("gmail", "v1", credentials=creds)
+        return "email and google meet invitation sent successfully"
+    except Exception as e:
+        print(f"Failed to create ticket: {e}")
 
-        # Create a MIMEText email message
-        message = MIMEText(custom_input.body)
-        # message['to'] = "; ".join(custom_input.to)
-        message['to'] = to
-        # message['to'] = custom_input.to
-        # message['from'] = "rahulurane.ai@gmail.com"
-        message['from'] = email
-        message['subject'] = custom_input.subject
-        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()  # Encode the email
+@tool
+def my_custom_email_calendar_tool_no_data(custom_input: MyCustomGoogleInput):
+    """This tool is used to send an email and calendar invite."""
+    try:
+        to = os.getenv("SENSITIVE_TO_EMAIL")
+        print(f"email subject inside email tool:- {custom_input.subject}")
+        print(f"email flag  inside email tool:- {custom_input.flag}")
+        print(f"email body inside email tool:- {custom_input.body}")
 
-        # Send email
-        result = gmail_service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
+        print(f"email to inside email tool:- {to}")
+        send_email(to, email, custom_input.subject, custom_input.body)
 
-        print(f"Email sent successfully! Message ID: {result['id']}")
-
-
-        timezone = pytz.timezone("Asia/Kolkata")
-        current_time = datetime.now(timezone)
-        future_time = current_time + timedelta(hours=2)
-        formatted_time = current_time.strftime("%Y-%m-%dT%H:%M:%S%z")
-        start = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
-        formatted_time = future_time.strftime("%Y-%m-%dT%H:%M:%S%z")
-        end = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
-
-        creds = None
-        if os.path.exists("calendar_token.json"):
-            creds = Credentials.from_authorized_user_file("calendar_token.json", ["https://www.googleapis.com/auth/gmail.send"])
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
-                creds = flow.run_local_server(port=0)
-            with open('calendar_token.json', 'w') as token:
-                token.write(creds.to_json())
-
-        calendar_service = build('calendar', 'v3', credentials=creds)
-
-        # attendees = {
-        #     "attendees": [{"email": emailId} for emailId in os.getenv("TO_EMAIL").split(";")]
-        # }
-        attendees = [{"email": emailId} for emailId in os.getenv("TO_EMAIL").split(";")]
-        # attendees = json.dumps(attendees)
-
-        event = {
-            "summary": custom_input.subject,
-            "location": "Virtual",
-            "description": custom_input.body,
-            "start": {
-                "dateTime": start,  # Start time in ISO 8601
-                "timeZone": "Asia/Kolkata",
-            },
-            "end": {
-                "dateTime": end,  # End time in ISO 8601
-                "timeZone": "Asia/Kolkata",
-            },
-            "attendees": attendees,
-            # "attendees": [
-            #     # {"email": custom_input.to.split(";")[0].strip()},
-            #     # {"email": custom_input.to.split(";")[1].strip()},
-            #     # {"email": custom_input.to.split(";")[2].strip()},
-            #     # {"email": custom_input.to[0].strip()},
-            #     # {"email": custom_input.to[1].strip()},
-            #     # {"email": custom_input.to[2].strip()},
-            #     {"email": os.getenv("TO_EMAIL").split(";")[0].strip()},
-            #     {"email": os.getenv("TO_EMAIL").split(";")[1].strip()},
-            #     {"email": os.getenv("TO_EMAIL").split(";")[2].strip()},
-            # ],
-            "conferenceData": {
-                "createRequest": {
-                    "requestId": "randomString123",
-                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
-                },
-            },
-            "reminders": {
-                "useDefault": False,
-                "overrides": [
-                    {"method": "email", "minutes": 24 * 60},
-                    {"method": "popup", "minutes": 10},
-                ],
-            },
-        }
-
-        # Create the event
-        event_calendar = calendar_service.events().insert(
-            calendarId="primary",
-            body=event,
-            conferenceDataVersion=1
-        ).execute()
-
-        print(f"Event created: {event_calendar.get('htmlLink')}")
         return "email and google meet invitation sent successfully"
     except Exception as e:
         print(f"Failed to create ticket: {e}")
@@ -303,3 +220,106 @@ def pdf_reader():
         print("File Read successfully ...")
     # pdf_reader = FileReadTool(file_path="IT_Service_Management_Priority_Definitions.pdf", encoding="iso-8859-1")
     return text
+
+def send_email(email_to, email_from, email_subject, email_body):
+    try:
+        # Authenticate and get credentials
+        # flow = InstalledAppFlow.from_client_secrets_file("credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+        # creds = flow.run_local_server(port=0)
+        creds = None
+        if os.path.exists("gmail_token.json"):
+            creds = Credentials.from_authorized_user_file("gmail_token.json",
+                                                          ["https://www.googleapis.com/auth/gmail.send"])
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+                creds = flow.run_local_server(port=0)
+            with open('gmail_token.json', 'w') as token:
+                token.write(creds.to_json())
+
+        gmail_service = build("gmail", "v1", credentials=creds)
+
+        # Create a MIMEText email message
+        message = MIMEText(email_body)
+        message['to'] = email_to
+        message['from'] = email_from
+        message['subject'] = email_subject
+        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()  # Encode the email
+
+        # Send email
+        result = gmail_service.users().messages().send(userId="me", body={"raw": raw_message}).execute()
+
+        print(f"Email sent successfully! Message ID: {result['id']}")
+    except Exception as e:
+        print(f"Failed to create ticket: {e}")
+
+
+def send_gmeet_invite(email_to, email_from, email_subject, email_body):
+    try:
+        timezone = pytz.timezone("Asia/Kolkata")
+        current_time = datetime.now(timezone)
+        future_time = current_time + timedelta(hours=2)
+        formatted_time = current_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        start = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
+        formatted_time = future_time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        end = f"{formatted_time[:-2]}:{formatted_time[-2:]}"
+
+        creds = None
+        if os.path.exists("calendar_token.json"):
+            creds = Credentials.from_authorized_user_file("calendar_token.json",
+                                                          ["https://www.googleapis.com/auth/gmail.send"])
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", ["https://www.googleapis.com/auth/gmail.send"])
+                creds = flow.run_local_server(port=0)
+            with open('calendar_token.json', 'w') as token:
+                token.write(creds.to_json())
+
+        calendar_service = build('calendar', 'v3', credentials=creds)
+
+        attendees = [{"email": emailId} for emailId in email_to.split(";")]
+
+        event = {
+            "summary": email_subject,
+            "location": "Virtual",
+            "description": email_body,
+            "start": {
+                "dateTime": start,  # Start time in ISO 8601
+                "timeZone": "Asia/Kolkata",
+            },
+            "end": {
+                "dateTime": end,  # End time in ISO 8601
+                "timeZone": "Asia/Kolkata",
+            },
+            "attendees": attendees,
+            "conferenceData": {
+                "createRequest": {
+                    "requestId": "randomString123",
+                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
+                },
+            },
+            "reminders": {
+                "useDefault": False,
+                "overrides": [
+                    {"method": "email", "minutes": 24 * 60},
+                    {"method": "popup", "minutes": 10},
+                ],
+            },
+        }
+
+        # Create the event
+        event_calendar = calendar_service.events().insert(
+            calendarId="primary",
+            body=event,
+            conferenceDataVersion=1
+        ).execute()
+
+        print(f"Event created: {event_calendar.get('htmlLink')}")
+    except Exception as e:
+        print(f"Failed to create ticket: {e}")
