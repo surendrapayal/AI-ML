@@ -31,7 +31,8 @@ class StatusPageCreationCrew():
             config=self.agents_config['status_page_creation_agent'],
             # llm=llm,
             # output_pydantic=JiraModel,
-            temperature=0,
+            # temperature=0,
+            cache=False
 
         )
 
@@ -52,4 +53,5 @@ class StatusPageCreationCrew():
             process=Process.sequential,
             verbose=True,
             memory=False,
+            cache=False
         )

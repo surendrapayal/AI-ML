@@ -169,12 +169,14 @@ class MyCustomGoogleInput(BaseModel):
 def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
     """This tool is used to send an email and calendar invite."""
     try:
-        to = os.getenv("INSENSITIVE_TO_EMAIL")
+        to = os.getenv("MERCHANT_INSENSITIVE_TO_EMAIL")
         print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email flag  inside email tool:- {custom_input.flag}")
         print(f"email body inside email tool:- {custom_input.body}")
 
-        print(f"email to inside email tool:- {to}")
+        if "issuing" in custom_input.body.lower():
+            to = os.getenv("ISSUING_INSENSITIVE_TO_EMAIL")
+
+        print(f"********************** email to inside email tool:- {to}")
         send_email(to, email, custom_input.subject, custom_input.body)
         # send_email(to, email, custom_input.subject2, custom_input.body2)
 
@@ -189,12 +191,14 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
 def my_custom_email_calendar_tool_no_data(custom_input: MyCustomGoogleInput):
     """This tool is used to send an email and calendar invite."""
     try:
-        to = os.getenv("SENSITIVE_TO_EMAIL")
+        to = os.getenv("MERCHANT_SENSITIVE_TO_EMAIL")
         print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email flag  inside email tool:- {custom_input.flag}")
         print(f"email body inside email tool:- {custom_input.body}")
 
-        print(f"email to inside email tool:- {to}")
+        if "issuing" in custom_input.body.lower():
+            to = os.getenv("ISSUING_SENSITIVE_TO_EMAIL")
+
+        print(f"##################### email to inside email tool:- {to}")
         send_email(to, email, custom_input.subject, custom_input.body)
 
         return "email and google meet invitation sent successfully"

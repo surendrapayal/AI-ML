@@ -34,7 +34,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
     @start()
     def generate_issue_reported_user(self):
         print("Generating issue reported by user")
-        self.state.issue_reported = "As a user I am not able to perform the transaction from the last 15 minutes and due to this over 500K transactions have declined that result in the revenue loss of more than 150K US dollar. Please look into this issue on urgent basis."
+        self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our ABC product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the ABC product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
         # self.state.issue_reported = "As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution."
 
     @listen(generate_issue_reported_user)
@@ -53,6 +53,9 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         self.state.priority = result["priority"]
         self.state.description = result["description"]
         self.state.summary= result["summary"]
+
+        print(f"************ segment:- {result["segment"]}")
+        print(f"************ product:- {result["product"]}")
 
     # @listen(identify_priority_of_issue)
     # def save_issue_and_priority(self):
@@ -158,7 +161,7 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         self.state.body2 = self.state.body2
         print("result template created", result.raw)
 
-    @listen(send_email_gmail)
+    @listen(create_email_template)
     def send_email_no_data_gmail(self):
         print("Send email and calendar invite")
         print(f"send_email_no_data_gmail :: Email subject2:- {self.state.subject2}")

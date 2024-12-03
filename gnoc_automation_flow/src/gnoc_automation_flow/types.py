@@ -7,6 +7,8 @@ class PriorityModel(BaseModel):
     priority: str
     description: str
     summary: str
+    segment: str
+    product: str
 
 class JiraModel(BaseModel):
     jira_id: str = Field(default = "")

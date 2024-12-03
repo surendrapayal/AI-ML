@@ -40,7 +40,8 @@ class PriorityCrew():
 			# llm=llm,
 			max_iter=1,
 			# tools=[PDFSearchTool(file_path="C:\\MyData\\ai_ml_personal_project\\demo_flow\\IT Service Management Priority Definitions v1.pdf")]
-			tools=[pdf_reader]
+			tools=[pdf_reader],
+			cache=False
 			# allow_delegation=True,
 			# verbose=True
 		)
@@ -57,6 +58,7 @@ class PriorityCrew():
 			config=self.agents_config['priority_identification'],
 			# llm=llm,
 			max_iter=1,
+			cache=False
 			# tools=[text_reader]
 			# allow_delegation=True,
 			# verbose=True
@@ -78,4 +80,5 @@ class PriorityCrew():
 			verbose=True,
 			# memory=True,
 			# manager_llm=llm
+			cache=False
 		)

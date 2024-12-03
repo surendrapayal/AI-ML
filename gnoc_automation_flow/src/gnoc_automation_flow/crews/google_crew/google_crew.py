@@ -25,7 +25,8 @@ class GoogleCrew():
 		return Agent(
 			config=self.agents_config['email_writer'],
 			# llm=llm,
-			max_iter=1
+			max_iter=1,
+			cache=False
 			# allow_delegation=True,
 			# verbose=True
 		)
@@ -68,6 +69,7 @@ class GoogleCrew():
 			tasks=self.tasks, # Automatically created by the @task decorator
 			process=Process.sequential,
 			verbose=True,
+			cache=False
 			# memory=False,
 			# manager_llm=llm
 		)

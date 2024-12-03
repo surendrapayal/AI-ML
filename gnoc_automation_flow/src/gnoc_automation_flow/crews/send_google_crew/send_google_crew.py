@@ -41,7 +41,8 @@ class GoogleSendCrew():
 		return Agent(
 			config=self.agents_config['email_calendar_send'],
 			# llm=llm,
-			max_iter=1
+			max_iter=1,
+			cache=False
 		)
 
 	@task
@@ -59,5 +60,6 @@ class GoogleSendCrew():
 			tasks=self.tasks, # Automatically created by the @task decorator
 			process=Process.sequential,
 			verbose=True,
+			cache=False
 			# memory=True,
 		)

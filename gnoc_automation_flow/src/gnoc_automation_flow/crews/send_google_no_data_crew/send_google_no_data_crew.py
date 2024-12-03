@@ -42,7 +42,8 @@ class GoogleSendNoDataCrew():
 		return Agent(
 			config=self.agents_config['email_calendar_send_no_data'],
 			# llm=llm,
-			max_iter=1
+			max_iter=1,
+			cache=False
 		)
 
 	@task
@@ -61,4 +62,5 @@ class GoogleSendNoDataCrew():
 			process=Process.sequential,
 			verbose=True,
 			# memory=True,
+			cache=False
 		)

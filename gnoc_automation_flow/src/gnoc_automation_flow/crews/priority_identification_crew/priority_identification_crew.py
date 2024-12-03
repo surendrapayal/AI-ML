@@ -26,7 +26,8 @@ class PriorityIdentificationCrew():
         return Agent(
             config=self.agents_config["priority_identification_agent"],
             # llm=llm,
-            output_pydantic=PriorityModel
+            output_pydantic=PriorityModel,
+            cache=False
         )
 
     @task
@@ -44,4 +45,5 @@ class PriorityIdentificationCrew():
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
+            cache=False
         )

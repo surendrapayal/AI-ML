@@ -37,7 +37,7 @@ class JiraCreationCrew():
             # llm=llm,
             # output_pydantic=JiraModel,
             max_iter=1,
-            temperature=0,
+            cache=False
         )
 
     @task
@@ -57,4 +57,5 @@ class JiraCreationCrew():
             process=Process.sequential,
             verbose=True,
             memory=False,
+            cache=False
         )
