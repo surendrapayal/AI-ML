@@ -1,0 +1,8 @@
+send_email_calendar_no_data:
+  description: >
+    Conduct a comprehensive analysis of the email provided. You have provided subject and body of the email. Draft and send an email using below information.
+    subject: {subject}
+    body: {body}
+  expected_output: >
+    A well crafted email should be send to the customer that addresses their issues and concerns.
+  agent: email_calendar_send_no_data
