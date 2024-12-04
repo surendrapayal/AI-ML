@@ -34,8 +34,8 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
     @start()
     def generate_issue_reported_user(self):
         print("Generating issue reported by user")
-        self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our ABC product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the ABC product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
-        # self.state.issue_reported = "As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution."
+        self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
+        # self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
 
     @listen(generate_issue_reported_user)
     def identify_priority_of_issue(self):
@@ -72,7 +72,11 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         result = (
             JiraCreationCrew()
             .crew()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "summary": self.state.summary})
+            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description, "summary": self.state.summary, "my_custom_jira_tool_input": {
+            "priority": self.state.priority,
+            "description": self.state.description,
+            "summary": self.state.summary
+        }})
         )
 
         print(f"Jira ticket creation output:- {result.raw}")
@@ -90,7 +94,12 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
             StatusPageCreationCrew()
             .crew()
             #.kickoff()
-            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": self.state.priority, "description": self.state.description, "summary": self.state.summary})
+            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": self.state.priority, "description": self.state.description, "summary": self.state.summary, "my_custom_jira_tool_input": {
+            "priority": self.state.priority,
+            "description": self.state.description,
+            "jira_id": self.state.jira_id,
+            "summary": self.state.summary
+        }})
         )
         print("\n\n################################\n\n")
         print(f"Status Page Creation Output:- {result}")
@@ -152,7 +161,10 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
             GoogleSendCrew()
             .crew()
             # .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1, "flag": False})
-            .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1})
+            .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1, "my_custom_google_input": {
+            "subject": self.state.subject1,
+            "body": self.state.body1
+        }})
         )
 
         print(f"Email subject2:- {self.state.subject2}")
@@ -161,16 +173,21 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
         self.state.body2 = self.state.body2
         print("result template created", result.raw)
 
-    @listen(create_email_template)
+    @listen(send_email_gmail)
     def send_email_no_data_gmail(self):
         print("Send email and calendar invite")
         print(f"send_email_no_data_gmail :: Email subject2:- {self.state.subject2}")
         print(f"send_email_no_data_gmail  :: Email body2:- {self.state.body2}")
+        sub = self.state.subject2
+        bo = self.state.body2
         result = (
             GoogleSendNoDataCrew()
             .crew()
             # .kickoff(inputs={"subject": self.state.subject2, "body": self.state.body2, "flag": True})
-            .kickoff(inputs={"subject": self.state.subject2, "body": self.state.body2})
+            .kickoff(inputs={"subject": sub, "body": bo, "my_custom_google_input": {
+            "subject": sub,
+            "body": bo
+        }})
         )
 
         print("result template created", result.raw)

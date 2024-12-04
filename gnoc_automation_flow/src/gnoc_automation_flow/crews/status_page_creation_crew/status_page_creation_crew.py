@@ -32,7 +32,7 @@ class StatusPageCreationCrew():
             # llm=llm,
             # output_pydantic=JiraModel,
             # temperature=0,
-            cache=False
+            # cache=False
 
         )
 
@@ -52,6 +52,6 @@ class StatusPageCreationCrew():
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            memory=False,
+            # memory=False,
             cache=False
         )

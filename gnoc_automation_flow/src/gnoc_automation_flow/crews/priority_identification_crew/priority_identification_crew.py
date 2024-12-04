@@ -27,7 +27,7 @@ class PriorityIdentificationCrew():
             config=self.agents_config["priority_identification_agent"],
             # llm=llm,
             output_pydantic=PriorityModel,
-            cache=False
+            # cache=False
         )
 
     @task

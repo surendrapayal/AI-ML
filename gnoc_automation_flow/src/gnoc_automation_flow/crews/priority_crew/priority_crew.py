@@ -41,7 +41,7 @@ class PriorityCrew():
 			max_iter=1,
 			# tools=[PDFSearchTool(file_path="C:\\MyData\\ai_ml_personal_project\\demo_flow\\IT Service Management Priority Definitions v1.pdf")]
 			tools=[pdf_reader],
-			cache=False
+			# cache=False
 			# allow_delegation=True,
 			# verbose=True
 		)

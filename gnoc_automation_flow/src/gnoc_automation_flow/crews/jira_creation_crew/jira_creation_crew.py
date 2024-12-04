@@ -37,7 +37,7 @@ class JiraCreationCrew():
             # llm=llm,
             # output_pydantic=JiraModel,
             max_iter=1,
-            cache=False
+            # cache=False
         )
 
     @task

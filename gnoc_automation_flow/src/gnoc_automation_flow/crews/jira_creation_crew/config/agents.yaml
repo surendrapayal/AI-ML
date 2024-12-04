@@ -4,8 +4,8 @@ jira_creation_agent:
   goal: >
     Analyze provided information and execute the custom method run this custom tool only 1 time and complete the task.
     Here is full information about the jira ticket:
-    Priority:- {priority}
-    Description:- {description}
-    Summary:- {summary}
+    priority:- {priority}
+    description:- {description}
+    summary:- {summary}
   backstory: >
     You are a JIRA admin. Your primary responsibility is to create the JIRA ticket with provided information.

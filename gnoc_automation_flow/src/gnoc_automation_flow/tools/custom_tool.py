@@ -155,10 +155,12 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
 
 class MyCustomGoogleInput(BaseModel):
     """Input schema for MyCustomJiraTool"""
-    subject: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email subject.")
+    subject: str
+    body: str
+    # subject: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email subject.")
+    # body: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email body.")
     # to: list = Field(..., description="email to.")
-    body: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email body.")
-   # flag: bool = Field(False, description="email flag.")
+    # flag: bool = Field(False, description="email flag.")
     # subject1: str = Field(..., description="email subject.")
     # body1: str = Field(..., description="email body.")
     # subject2: str = Field(..., description="email subject.")

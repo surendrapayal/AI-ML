@@ -42,7 +42,7 @@ class GoogleSendCrew():
 			config=self.agents_config['email_calendar_send'],
 			# llm=llm,
 			max_iter=1,
-			cache=False
+			# cache=False
 		)
 
 	@task

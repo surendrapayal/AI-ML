@@ -3,9 +3,9 @@ jira_creation_task:
     create jira ticket based on the information.
     - execute jira_creation_agent method and do not call jira api by you own the the code to execute.
     - Here is input information about the jira ticket:
-      Priority:- {priority}
-      Description:- {description}
-      Summary:- {summary}
+      priority:- {priority}
+      description:- {description}
+      summary:- {summary}
   expected_output: >
      jira_id,summary, priority and description of the jira ticket created.
   agent: jira_creation_agent
