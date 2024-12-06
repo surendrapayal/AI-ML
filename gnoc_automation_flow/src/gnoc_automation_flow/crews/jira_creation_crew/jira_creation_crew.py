@@ -1,21 +1,8 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from ...model.model_classes import JiraModel
+from ...tools.custom_tool import custom_jira_tool
 # from langchain_openai import ChatOpenAI
-# from gnoc_automation_flow.types import JiraModel
-from ...types import JiraModel
-
-# from gnoc_automation_flow.tools.custom_tool import JiraTool
-# from gnoc_automation_flow.tools.custom_tool import JiraToolNew
-# from gnoc_automation_flow.tools.custom_tool import MyCustomJiraTool
-# from gnoc_automation_flow.tools.custom_tool import my_custom_jira_tool_new
-from ...tools.custom_tool import my_custom_jira_tool_new
-from sympy.physics.units import temperature
-
-# from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraToolNew
-
-# from gnoc_automation_flow.JiraTool import jira_tool
-
-# from gnoc_automation_flow.tools.custom_tool import jira_tool
 
 # llm=ChatOpenAI(
 #     model_name="ollama/llama3.1:latest",
@@ -35,9 +22,7 @@ class JiraCreationCrew():
         return Agent(
             config=self.agents_config['jira_creation_agent'],
             # llm=llm,
-            # output_pydantic=JiraModel,
             max_iter=1,
-            # cache=False
         )
 
     @task
@@ -45,7 +30,7 @@ class JiraCreationCrew():
         return Task(
             config=self.tasks_config['jira_creation_task'],
             output_pydantic = JiraModel,
-            tools=[my_custom_jira_tool_new],
+            tools=[custom_jira_tool],
         )
 
     @crew
@@ -56,6 +41,5 @@ class JiraCreationCrew():
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            memory=False,
             cache=False
         )

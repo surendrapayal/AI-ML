@@ -7,5 +7,5 @@ status_page_creation_task:
     description : {description}
     summary : {summary}
   expected_output: >
-    Jira_id, priority and description and status_io_id send as response.
+    jira_id, priority and description and status_io_id send as response.
   agent: status_page_creation_agent

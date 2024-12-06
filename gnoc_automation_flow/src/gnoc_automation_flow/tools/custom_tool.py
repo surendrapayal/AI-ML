@@ -1,15 +1,10 @@
 import json
-from crewai_tools import tool
-from pydantic import BaseModel, Field
 import requests
-# from gnoc_automation_flow.src.gnoc_automation_flow.types import JiraModel
 from dotenv import load_dotenv
 from jira import JIRA
 from crewai_tools import tool
 from pypdf import PdfReader
-
-from ..model.status_page import Incident
-from sympy import print_mathml
+from ..model.model_classes import MyCustomJiraToolInput, EmailTemplate
 import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -19,33 +14,35 @@ from email.mime.text import MIMEText
 from google.oauth2.credentials import Credentials
 import base64
 import pytz
-from ..types import JiraModel
 
 # loading variables from .env file
 load_dotenv()
 # Jira credentials and endpoint
-jira_url = 'https://rahuluraneai.atlassian.net/'
+jira_url = os.getenv("JIRA_URL")
+# jira_url = 'https://rahuluraneai.atlassian.net/'
 api_token = os.getenv("JIRA_API_TOKEN")  # You can generate this from your Atlassian account
-email = 'rahulurane.ai@gmail.com'  # Your Jira login email
-project_key = 'Gnoc-Issue-tracker'  # Replace with your Jira project key
-issue_type = 'Bug'  # Issue type (Bug in this case)
-status_page_url = "https://api.statuspage.io/v1"
+email = os.getenv("FROM_EMAIL")  # Your Jira login email
+project_key = os.getenv("JIRA_PROJECT_KEY")  # Replace with your Jira project key
+issue_type = "Bug"  # Issue type (Bug in this case)
+status_page_url = os.getenv("STATUS_PAGE_URL")
 status_page_headers = {
     "Authorization": f"OAuth {os.getenv("STATUS_API_TOKEN")}",
     "Content-Type": "application/json"
 }
 
-class MyCustomJiraToolInput(BaseModel):
-    """Input schema for MyCustomJiraTool"""
-    priority: str = Field(..., description="Priority of the issue.")
-    description: str = Field(..., description="Description of the issue.")
-    jira_id: str = Field("JIRA-123", description="")
-    summary: str = Field("DUMMY SUMMARY", description="")
-
-
+@tool
+def pdf_reader():
+    "Read the pdf file and return the content of the file"
+    # reader = PdfReader("C:\\MyData\\AI-ML\\gnoc_automation_flow\\Priority.pdf")
+    reader = PdfReader(os.getenv("PRIORITY_FILE"))
+    text=""
+    for page in range(len(reader.pages)):
+        pageObj = reader.pages[page]
+        text+=pageObj.extract_text()
+    return text
 
 @tool
-def my_custom_jira_tool_new(custom_input: MyCustomJiraToolInput):
+def custom_jira_tool(custom_input: MyCustomJiraToolInput):
     """
         Create a Jira ticket with the given details.
         if this method is executed then stop
@@ -94,8 +91,6 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         summary =summary
         description=description
     """
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$\n\n")
-    print(custom_input)
     try:
         # Example of creating an Incident object
         incident_data = {
@@ -153,22 +148,8 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         print(f"Error in create_status_page_tool: {e}")
         raise
 
-class MyCustomGoogleInput(BaseModel):
-    """Input schema for MyCustomJiraTool"""
-    subject: str
-    body: str
-    # subject: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email subject.")
-    # body: str = Field("API Limit Exhausted. Wait for a reset: Limits usually refresh within [specific time, e.g., '24 hours'].", description="email body.")
-    # to: list = Field(..., description="email to.")
-    # flag: bool = Field(False, description="email flag.")
-    # subject1: str = Field(..., description="email subject.")
-    # body1: str = Field(..., description="email body.")
-    # subject2: str = Field(..., description="email subject.")
-    # body2: str = Field(..., description="email body.")
-
-
 @tool
-def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
+def my_custom_email_calendar_tool(custom_input: EmailTemplate):
     """This tool is used to send an email and calendar invite."""
     try:
         to = os.getenv("MERCHANT_INSENSITIVE_TO_EMAIL")
@@ -190,7 +171,7 @@ def my_custom_email_calendar_tool(custom_input: MyCustomGoogleInput):
         print(f"Failed to create ticket: {e}")
 
 @tool
-def my_custom_email_calendar_tool_no_data(custom_input: MyCustomGoogleInput):
+def my_custom_email_calendar_tool_no_data(custom_input: EmailTemplate):
     """This tool is used to send an email and calendar invite."""
     try:
         to = os.getenv("MERCHANT_SENSITIVE_TO_EMAIL")
@@ -206,26 +187,6 @@ def my_custom_email_calendar_tool_no_data(custom_input: MyCustomGoogleInput):
         return "email and google meet invitation sent successfully"
     except Exception as e:
         print(f"Failed to create ticket: {e}")
-
-@tool
-def pdf_reader():
-    "Read the pdf file and lear form the text from the file and decide the priority "
-
-    reader = PdfReader('IT Service Management Priority Definitions v1.pdf')
-
-
-    # printing number of pages in pdf file
-    print(len(reader.pages))
-    text=""
-    for page in range(len(reader.pages)):
-        # creating a page object
-        pageObj = reader.pages[page]
-        # extracting text from page
-
-        text+=pageObj.extract_text()
-        print("File Read successfully ...")
-    # pdf_reader = FileReadTool(file_path="IT_Service_Management_Priority_Definitions.pdf", encoding="iso-8859-1")
-    return text
 
 def send_email(email_to, email_from, email_subject, email_body):
     try:

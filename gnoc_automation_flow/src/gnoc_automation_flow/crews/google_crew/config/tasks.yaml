@@ -8,12 +8,14 @@ write_email:
     GNOC Project
     Below are the information that need you can refer. 
     jira_id:- {jira_id}
-    Priority:- {priority}
-    Description:- {description}
-    Project:- {project}
-    Summary:- {summary}
+    priority:- {priority}
+    description:- {description}
+    project:- {project}
+    summary:- {summary}
+    impact:- {impact}
+    urgency:- {urgency}
   expected_output: >
-    subject, summary, jira_id and body of the draft email should be generated from the information shared to you.
+    subject and body of the draft email should be generated from the information shared to you.
   agent: email_writer
 
 write_email_no_data:
@@ -27,9 +29,11 @@ write_email_no_data:
     GNOC Project
     Below are the information that need you can refer. 
     jira_id:- {jira_id}
-    Priority:- {priority}
-    Description:- {description}
-    Project:- {project}
+    priority:- {priority}
+    description:- {description}
+    project:- {project}
+    impact:- {impact}
+    urgency:- {urgency}
   expected_output: >
-    Email draft should be generated from the information shared to you.
+    subject and body of the draft email should be generated from the information shared to you.
   agent: email_writer

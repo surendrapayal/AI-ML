@@ -1,11 +1,13 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+
+# from ...types import EmailTemplate
+
+
+from ...model.model_classes import EmailTemplate
+
+
 # from langchain_openai import ChatOpenAI
-# from demo_flow.tools.custom_tool import my_custom_email_tool_new
-
-# from demo_flow.types import EmailTemplate
-from ...types import EmailTemplate
-
 # llm=ChatOpenAI(
 #     model_name="ollama/llama3.1:latest",
 #     api_key="your-api-key",
@@ -28,7 +30,7 @@ class GoogleCrew():
 			max_iter=1,
 			# cache=False
 			# allow_delegation=True,
-			# verbose=True
+			verbose=True
 		)
 
 	@task
@@ -36,30 +38,14 @@ class GoogleCrew():
 		return Task(
 			config=self.tasks_config['write_email'],
 			output_pydantic=EmailTemplate
-			# output_json = EmailTemplate
 		)
 
 	@task
 	def write_email_no_data(self) -> Task:
 		return Task(
 			config=self.tasks_config['write_email_no_data'],
-			# output_pydantic=EmailTemplate,
-			output_pydantic=EmailTemplate
+			output_pydantic=EmailTemplate,
 		)
-
-	# @agent
-	# def email_send(self) -> Agent:
-	# 	return Agent(
-	# 		config=self.agents_config['email_send'],
-	# 		llm=llm,
-	# 		tools=[my_custom_email_tool_new],
-	# 	)
-	#
-	# @task
-	# def send_email(self) -> Task:
-	# 	return Task(
-	# 		config=self.tasks_config['send_email'],
-	# 	)
 
 	@crew
 	def crew(self) -> Crew:

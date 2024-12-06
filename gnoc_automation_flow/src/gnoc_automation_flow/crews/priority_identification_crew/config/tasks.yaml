@@ -1,8 +1,11 @@
 priority_identification_task:
   description: >
-    Need to analyze the issue reported by the user. Identify the priority, details description and one liner summary (20 words) of the issue  of the issue reported by the user.
-    Create the Priority Model with priority and description.
-    Here is full information about the issue reported by the user:- {issue_reported}
+    Extract the information from the PDF file and issue reported by user.
+      -  You need to find the priority, impact and urgency of the issue reported by user based on the information from PDF file.
+      -  You need to assign the priority from the pdf file only. Its value should be p1, p2, p3 or p4 based on the PDF file.
+      -  You need to create the description of the issue reported by user
+      -  You need to create one liner summary of the issue reported by user in maximum 10 words
+    Here is the issue reported by the user:- {issue_reported}
   expected_output: >
-    priority,summary, segment, product and description of the issue reported by the user.
+    description, summary, segment, product, priority, impact and urgency should be identify for the issue reported by user.
   agent: priority_identification_agent

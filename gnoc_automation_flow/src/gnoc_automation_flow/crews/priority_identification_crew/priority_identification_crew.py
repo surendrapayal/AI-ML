@@ -1,9 +1,8 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from ...model.model_classes import PriorityModel
+from ...tools.custom_tool import pdf_reader
 # from langchain_openai import ChatOpenAI
-
-# from gnoc_automation_flow.types import PriorityModel
-from ...types import PriorityModel
 
 # llm=ChatOpenAI(
 #     model_name="ollama/llama3.1:latest",
@@ -15,8 +14,6 @@ from ...types import PriorityModel
 @CrewBase
 class PriorityIdentificationCrew():
     """Priority Identification Crew"""
-    # priority_identification_agents_config = 'config/agents.yaml'
-    # priority_identification_tasks_config = 'config/tasks.yaml'
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
@@ -26,15 +23,15 @@ class PriorityIdentificationCrew():
         return Agent(
             config=self.agents_config["priority_identification_agent"],
             # llm=llm,
-            output_pydantic=PriorityModel,
-            # cache=False
+            tools=[pdf_reader],
         )
 
     @task
     def priority_identification_task(self) -> Task:
         return Task(
             config=self.tasks_config["priority_identification_task"],
-            output_pydantic = PriorityModel
+            output_pydantic = PriorityModel,
+            human_input=True
         )
 
     @crew

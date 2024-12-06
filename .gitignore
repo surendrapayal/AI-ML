@@ -171,3 +171,5 @@ jira.txt
 uv.lock
 gnoc_automation_flow/src/gnoc_automation_flow/__pycache__/
 gnoc_automation_flow/ssrc/gnoc_automation_flow/crews/*/__pycache__/
+
+gnoc_automation_flow/PriorityIdentificationResponse.txt

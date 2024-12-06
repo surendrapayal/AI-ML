@@ -7,5 +7,5 @@ jira_creation_task:
       description:- {description}
       summary:- {summary}
   expected_output: >
-     jira_id,summary, priority and description of the jira ticket created.
+     jira_id, summary, priority and description of the jira ticket created.
   agent: jira_creation_agent

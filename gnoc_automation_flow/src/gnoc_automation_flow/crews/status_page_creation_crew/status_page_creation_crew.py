@@ -1,17 +1,9 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-# from langchain_openai import ChatOpenAI
-# from gnoc_automation_flow.types import JiraModel
-from ...types import JiraModel
+from ...model.model_classes import JiraModel
 from ...tools.custom_tool import create_status_page_tool
-from sympy.physics.units import temperature
 
-# from gnoc_automation_flow.src.gnoc_automation_flow.tools.custom_tool import JiraToolNew
-
-# from gnoc_automation_flow.JiraTool import jira_tool
-
-# from gnoc_automation_flow.tools.custom_tool import jira_tool
-
+# from langchain_openai import ChatOpenAI
 # llm=ChatOpenAI(
 #     model_name="ollama/llama3.1:latest",
 #     api_key="your-api-key",
@@ -52,6 +44,5 @@ class StatusPageCreationCrew():
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # memory=False,
             cache=False
         )
