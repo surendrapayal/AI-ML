@@ -1,5 +1,6 @@
 import json
 import requests
+from crewai_tools.tools.file_read_tool.file_read_tool import FileReadTool
 from dotenv import load_dotenv
 from jira import JIRA
 from crewai_tools import tool
@@ -290,3 +291,5 @@ def send_gmeet_invite(email_to, email_from, email_subject, email_body):
         print(f"Event created: {event_calendar.get('htmlLink')}")
     except Exception as e:
         print(f"Failed to create ticket: {e}")
+
+custom_email_template_tool = FileReadTool(file_path="email_template_sample.html")

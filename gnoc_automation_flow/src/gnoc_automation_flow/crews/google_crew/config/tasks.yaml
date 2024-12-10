@@ -1,12 +1,10 @@
 write_email:
   description: >
-    Analyze the information shared to you and need to create the email template based on the information.
     You need to write email in a thoughtful and helpful way. The email should be polite and it should show the urgency based on the priority if the issue.
-    Email draft should contain the subject and body fields. Use the below signature in the email body.
-    Best regards,
-    AI Team
-    GNOC Project
-    Below are the information that need you can refer. 
+      -  Analyze the information shared to you and need to draft the email.
+      -  Email draft should use the html template provided in the FileReadTool. Please do not add summary and description in the table. It should be present in the email body.
+      -  subject and body text fields should be generated.
+    Below are the information that need you can refer and replace in the email template. 
     jira_id:- {jira_id}
     priority:- {priority}
     description:- {description}
@@ -20,18 +18,17 @@ write_email:
 
 write_email_no_data:
   description: >
-    Analyze the information shared to you and need to create the email template based on the information.
     You need to write email in a thoughtful and helpful way. The email should be polite and it should show the urgency based on the priority if the issue.
+      -  Analyze the information shared to you and need to draft the email.
+      -  Email draft should use the html template provided in the FileReadTool. Please do not add summary and description in the table. It should be present in the email body.
+      -  subject and body text fields should be generated.
     Do not include any quantitative data such as amount, number of transactions, number customers of etc.
-    Email draft should contain the subject and body fields. Use the below signature in the email body.
-    Best regards,
-    AI Team
-    GNOC Project
     Below are the information that need you can refer. 
     jira_id:- {jira_id}
     priority:- {priority}
     description:- {description}
     project:- {project}
+    summary:- {summary}
     impact:- {impact}
     urgency:- {urgency}
   expected_output: >
