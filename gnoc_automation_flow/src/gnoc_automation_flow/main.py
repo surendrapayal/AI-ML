@@ -102,7 +102,7 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         print("\n################################")
         print(f"create_status_page_ticket :: Raw result:- {result.raw}")
 
-    @listen(identify_priority_of_issue)
+    @listen(create_status_page_ticket)
     def create_email_template(self):
         print("Creating email template")
         jira_id = self.state.jira_id
