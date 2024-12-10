@@ -31,7 +31,7 @@ class PriorityIdentificationCrew():
         return Task(
             config=self.tasks_config["priority_identification_task"],
             output_pydantic = PriorityModel,
-            human_input=True
+            # human_input=True
         )
 
     @crew
