@@ -2,7 +2,8 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 # from langchain_openai import ChatOpenAI
 # from demo_flow.types import my_custom_email_calendar_tool_new
-from ...tools.custom_tool import my_custom_email_calendar_tool_no_data
+# from ...tools.custom_tool import my_custom_email_calendar_tool_no_data
+from ...tools.custom_tool import my_custom_tool_no_data
 
 
 # from demo_flow.tools.custom_tool import MyCustomEmailInput
@@ -50,7 +51,7 @@ class GoogleSendNoDataCrew():
 	def send_email_calendar_no_data(self) -> Task:
 		return Task(
 			config=self.tasks_config['send_email_calendar_no_data'],
-			tools=[my_custom_email_calendar_tool_no_data],
+			tools=[my_custom_tool_no_data],
 		)
 
 	@crew

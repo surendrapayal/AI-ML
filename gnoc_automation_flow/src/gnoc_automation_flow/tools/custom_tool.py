@@ -1,5 +1,8 @@
 import json
+from email.mime.multipart import MIMEMultipart
+
 import requests
+from crewai_tools.tools.file_read_tool.file_read_tool import FileReadTool
 from dotenv import load_dotenv
 from jira import JIRA
 from crewai_tools import tool
@@ -149,42 +152,44 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         raise
 
 @tool
-def my_custom_email_calendar_tool(custom_input: EmailTemplate):
-    """This tool is used to send an email and calendar invite."""
+def my_custom_tool():
+    """This is custom tool to read and process the file with no input."""
     try:
         to = os.getenv("MERCHANT_INSENSITIVE_TO_EMAIL")
-        print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email body inside email tool:- {custom_input.body}")
+        email_template = open("EmailTemplate.html", "r").read()
 
-        if "issuing" in custom_input.body.lower():
+        email_template_json = json.loads(email_template)
+        subject = email_template_json["subject"]
+        body = str(email_template_json["body"]).replace("\\", "")
+
+        if "issuing" in body.lower():
             to = os.getenv("ISSUING_INSENSITIVE_TO_EMAIL")
 
-        print(f"********************** email to inside email tool:- {to}")
-        send_email(to, email, custom_input.subject, custom_input.body)
-        # send_email(to, email, custom_input.subject2, custom_input.body2)
+        send_email(to, email, subject, body)
+        send_gmeet_invite(to, email, subject, body)
 
-        send_gmeet_invite(to, email, custom_input.subject, custom_input.body)
-        # send_gmeet_invite(to, email, custom_input.subject2, custom_input.body2)
-
-        return "email and google meet invitation sent successfully"
+        return f"email and google meet invitation sent successfully to {to}"
     except Exception as e:
         print(f"Failed to create ticket: {e}")
 
 @tool
-def my_custom_email_calendar_tool_no_data(custom_input: EmailTemplate):
-    """This tool is used to send an email and calendar invite."""
+def my_custom_tool_no_data():
+    """This is custom tool to read and process the file with no input."""
     try:
         to = os.getenv("MERCHANT_SENSITIVE_TO_EMAIL")
-        print(f"email subject inside email tool:- {custom_input.subject}")
-        print(f"email body inside email tool:- {custom_input.body}")
 
-        if "issuing" in custom_input.body.lower():
+        email_template_no_data = open("EmailTemplateNoData.html", "r").read()
+
+        email_template_json = json.loads(email_template_no_data)
+        subject = email_template_json["subject"]
+        body = str(email_template_json["body"]).replace("\\", "")
+
+        if "issuing" in body.lower():
             to = os.getenv("ISSUING_SENSITIVE_TO_EMAIL")
 
-        print(f"##################### email to inside email tool:- {to}")
-        send_email(to, email, custom_input.subject, custom_input.body)
+        send_email(to, email, subject, body)
 
-        return "email and google meet invitation sent successfully"
+        return f"email sent successfully to {to}"
     except Exception as e:
         print(f"Failed to create ticket: {e}")
 
@@ -210,7 +215,9 @@ def send_email(email_to, email_from, email_subject, email_body):
         gmail_service = build("gmail", "v1", credentials=creds)
 
         # Create a MIMEText email message
-        message = MIMEText(email_body)
+        message = MIMEMultipart()
+        message.attach(MIMEText(email_body, 'html'))
+        # message = MIMEText(email_body)
         message['to'] = email_to
         message['from'] = email_from
         message['subject'] = email_subject
@@ -290,3 +297,5 @@ def send_gmeet_invite(email_to, email_from, email_subject, email_body):
         print(f"Event created: {event_calendar.get('htmlLink')}")
     except Exception as e:
         print(f"Failed to create ticket: {e}")
+
+custom_email_template_tool = FileReadTool(file_path="email_template_sample.html")

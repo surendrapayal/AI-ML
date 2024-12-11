@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
 
@@ -33,8 +35,8 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
     @start()
     def generate_issue_reported_user(self):
         print("Generating issue reported by user")
-        self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
-        # self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
+        # self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
+        self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
 
     @listen(generate_issue_reported_user)
     def identify_priority_of_issue(self):
@@ -104,6 +106,16 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
 
     @listen(create_status_page_ticket)
     def create_email_template(self):
+        if os.path.exists("EmailTemplate.html"):
+            os.remove("EmailTemplate.html")
+        else:
+            print("EmailTemplate.html file does not exist")
+
+        if os.path.exists("EmailTemplateNoData.html"):
+            os.remove("EmailTemplateNoData.html")
+        else:
+            print("EmailTemplateNoData.html file does not exist")
+
         print("Creating email template")
         jira_id = self.state.jira_id
         priority = self.state.priority
@@ -120,68 +132,26 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         print("\n################################")
         print(f"create_email_template :: Raw result:- {result.raw}")
 
-        i = 0
-        for task_output in list(enumerate(result))[3][1][1]:
-            print("Attributes of TaskOutput object:")
-            for attr, value in vars(task_output).items():
-                if attr == "pydantic":
-                    print(f"{attr}: {value.subject}")
-                    print(f"{attr}: {value.body}")
-                    if i == 0:
-                        self.state.subject1 = value.subject
-                        self.state.body1 = value.body
-                        i = i + 1
-                    else:
-                        self.state.subject2 = value.subject
-                        self.state.body2 = value.body
-        # print("*****************")
-        # print(list(enumerate(result))[3][1][1][0])
-        #
-        # print("*****************")
-        # print(list(enumerate(result))[3][1][1][1])
-        #
-        # print("##################")
-        # print([attr for attr in vars(list(enumerate(result))[3][1][1][0]).items() if attr == "pydantic"])
-
     @listen(create_email_template)
     def send_email_gmail(self):
         print("Send email and calendar invite")
-        print(f"Email subject1:- {self.state.subject1}")
-        print(f"Email body1:- {self.state.body1}")
         result = (
             GoogleSendCrew()
             .crew()
-            .kickoff(inputs={"subject": self.state.subject1, "body": self.state.body1, "my_custom_google_input": {
-            "subject": self.state.subject1,
-            "body": self.state.body1
-        }})
+            .kickoff()
         )
 
         print("\n################################")
         print(f"send_email_gmail :: Raw result:- {result.raw}")
-        self.state.subject2 = self.state.subject2
-        self.state.body2 = self.state.body2
 
     @listen(create_email_template)
     def send_email_gmail_no_data(self):
         print("Send email and calendar invite")
-        print(f"Email subject1:- {self.state.subject1}")
-        print(f"Email body1:- {self.state.body1}")
         result = (
             GoogleSendNoDataCrew()
             .crew()
-            .kickoff(inputs={"subject": self.state.subject2, "body": self.state.body2, "my_custom_google_input": {
-            "subject": self.state.subject2,
-            "body": self.state.body2
-        }})
+            .kickoff()
         )
-
-        print(f"Email subject2:- {self.state.subject2}")
-        print(f"Email body2:- {self.state.body2}")
-        self.state.subject2 = self.state.subject2
-        self.state.body2 = self.state.body2
-        print("result template created", result.raw)
-
         print("\n################################")
         print(f"send_email_gmail_no_data :: Raw result:- {result.raw}")
 

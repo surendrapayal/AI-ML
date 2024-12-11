@@ -172,3 +172,5 @@ uv.lock
 calendar_token.json
 gmail_token.json
 PriorityIdentificationResponse.txt
+EmailTemplate.html
+EmailTemplateNoData.html

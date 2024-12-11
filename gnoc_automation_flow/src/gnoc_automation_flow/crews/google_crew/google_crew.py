@@ -5,6 +5,7 @@ from crewai.project import CrewBase, agent, crew, task
 
 
 from ...model.model_classes import EmailTemplate
+from ...tools.custom_tool import custom_email_template_tool
 
 
 # from langchain_openai import ChatOpenAI
@@ -37,7 +38,9 @@ class GoogleCrew():
 	def write_email(self) -> Task:
 		return Task(
 			config=self.tasks_config['write_email'],
-			output_pydantic=EmailTemplate
+			output_pydantic=EmailTemplate,
+			tools=[custom_email_template_tool],
+			output_file="EmailTemplate.html"
 		)
 
 	@task
@@ -45,6 +48,8 @@ class GoogleCrew():
 		return Task(
 			config=self.tasks_config['write_email_no_data'],
 			output_pydantic=EmailTemplate,
+			tools=[custom_email_template_tool],
+			output_file="EmailTemplateNoData.html"
 		)
 
 	@crew

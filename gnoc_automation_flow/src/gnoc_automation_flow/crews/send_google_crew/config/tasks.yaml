@@ -1,8 +1,6 @@
 send_email_calendar:
   description: >
-    Conduct a comprehensive analysis of the email provided. You have provided subject and body of the email. Draft and send an email using below information.
-    subject: {subject}
-    body: {body}
+    Task to execute the custom tool to read and process the file with no input.
   expected_output: >
-    A well crafted email should be send to the customer that addresses their issues and concerns.
+    Custom tool should be executed.
   agent: email_calendar_send
