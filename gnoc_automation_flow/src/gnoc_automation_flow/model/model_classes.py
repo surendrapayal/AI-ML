@@ -26,6 +26,9 @@ class JiraModel(BaseModel):
     priority: str = Field(default = "")
     summary: str = Field(default="")
     status_io_id: str = Field(default="")
+    white_board_id: str = Field(default="")
+    white_board_link: str = Field(default="")
+
 
 class EmailTemplate(BaseModel):
     subject: str

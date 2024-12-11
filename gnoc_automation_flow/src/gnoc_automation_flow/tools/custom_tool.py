@@ -15,6 +15,7 @@ from google.auth.transport.requests import Request
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from google.oauth2.credentials import Credentials
+from google.oauth2.service_account import Credentials as service_credential
 import base64
 import pytz
 
@@ -122,8 +123,16 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         }
 
         url = f"{status_page_url}/pages/cgdn7cbyygwm/incidents"
+        replacements_dict = {"ICD_NUMER": f"{custom_input.jira_id}", "ISSUE_DESCRIPTION": f"{custom_input.summary}",
+                             "IMPACTED_SEGMENT": "L-TSYS Issuing", "IM_IMPACTED_SERVICE": "TransIT"}
 
+        # Original document ID
 
+        original_document_id = os.getenv("WHITEBOARD_TEMPLATE_DOC_ID")
+        document_name=f"{custom_input.jira_id} - {custom_input.summary}"
+        # Call the function
+        new_document_id,document_link = fetch_clone_and_replace(original_document_id, replacements_dict,document_name)
+        print(f"WhiteBoard Created with id : - {new_document_id} and link - {document_link}")
         print(f"request : - {incident_data}")
 
 
@@ -137,7 +146,9 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "description": custom_input.description,
                 "priority": custom_input.priority,
                 "status_io_id": response.json()["id"],
-                "summary": custom_input.summary
+                "summary": custom_input.summary,
+                "white_board_id": new_document_id,
+                "white_board_link": document_link,
             }
             result_payload = json.dumps(result_payload)
             print(f"******* status page result_payload *******:- {result_payload}")
@@ -295,8 +306,86 @@ def send_gmeet_invite(email_to, email_from, email_subject, email_body):
             conferenceDataVersion=1
         ).execute()
 
+
         print(f"Event created: {event_calendar.get('htmlLink')}")
     except Exception as e:
         print(f"Failed to create ticket: {e}")
 
 custom_email_template_tool = FileReadTool(file_path="email_template_sample.html")
+
+SCOPES = ["https://www.googleapis.com/auth/documents.readonly","https://www.googleapis.com/auth/documents",'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
+SERVICE_ACCOUNT_JSON =os.getenv("SERVICE_ACCOUNT_JSON")
+def authenticate_google_api():
+    """Authenticate and return Google API credentials."""
+    return service_credential.from_service_account_file(SERVICE_ACCOUNT_JSON, scopes=SCOPES)
+
+
+def clone_google_doc(source_doc_id,document_name):
+    """
+    Clone a Google Document, including all text, styles, images, and other elements.
+
+    :param document_name:
+    :param source_doc_id: The ID of the source document to clone.
+    :return: The ID of the cloned document.
+    """
+    # Authenticate using the service account
+    credentials = authenticate_google_api()
+
+    # Build the Google Drive service
+    drive_service = build('drive', 'v3', credentials=credentials)
+
+    # Step 1: Copy the source document
+    copy_metadata = {'name': document_name}
+    copied_file = drive_service.files().copy(fileId=source_doc_id, body=copy_metadata).execute()
+    cloned_doc_id = copied_file.get('id')
+    # Grant edit permissions to all users
+    permissions = {
+        'role': 'writer',
+        'type': 'anyone'
+    }
+    drive_service.permissions().create(fileId=cloned_doc_id, body=permissions).execute()
+    # Get the web content link of the newly created file
+    file = drive_service.files().get(fileId=cloned_doc_id, fields='webContentLink').execute()
+    # Prioritize webContentLink if available
+    if 'webContentLink' in file:
+        file_link = file['webContentLink']
+    else:
+        # Construct the link manually using alternateLink
+        file_link = f"https://drive.google.com/file/d/{cloned_doc_id}/view?usp=sharing"
+
+    return cloned_doc_id,file_link
+
+def fetch_clone_and_replace(original_document_id, replacements,document_name):
+    """
+    Fetch an existing Google Doc, clone it to a new document,
+    and replace specific strings based on a dictionary of replacements.
+    :param document_name: The name of the document.
+    :param original_document_id: The ID of the original document to fetch.
+    :param replacements: A dictionary where keys are search strings and values are replacements.
+    """
+    credentials = authenticate_google_api()
+    docs_service = build('docs', 'v1', credentials=credentials)
+
+    # Step 1: Fetch the content of the existing document
+    new_doc_id, document_link=clone_google_doc(original_document_id,document_name)
+    #Step 4: Replace each text based on the replacements dictionary
+    replace_requests = []
+    for search_text, replace_text in replacements.items():
+        replace_requests.append({
+            'replaceAllText': {
+                'containsText': {
+                    'text': search_text,
+                    'matchCase': True,
+                },
+                'replaceText': replace_text,
+            }
+        })
+
+    if replace_requests:
+        docs_service.documents().batchUpdate(
+            documentId=new_doc_id,
+            body={'requests': replace_requests}
+        ).execute()
+        print(f"Replacements completed in the new document.")
+
+    return new_doc_id,document_link

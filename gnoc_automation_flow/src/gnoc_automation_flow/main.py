@@ -23,6 +23,8 @@ class GNOCAutomation(BaseModel):
     issue_reported: str = ""
     jira_id: str = ""
     status_io_id: str = ""
+    white_board_id: str = ""
+    white_board_link: str = ""
     subject: str = ""
     # to: list = None
     body: str = ""
@@ -65,11 +67,6 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         return context
 
 
-    # @listen(identify_priority_of_issue)
-    # def save_issue_and_priority(self, context):
-    #     print("Saving priority")
-    #     with open("PriorityIdentificationResponse.txt", "w") as f:
-    #         f.write(self.state.priority_identification_response)
 
     @listen(identify_priority_of_issue)
     def create_jira_ticket(self, context):
@@ -111,7 +108,10 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         )
         print("\n################################")
         print(f"create_status_page_ticket :: Raw result:- {result.raw}")
+
         self.state.status_io_id = result["status_io_id"]
+        self.state.white_board_id = result["white_board_id"]
+        self.state.white_board_link = result["white_board_link"]
         return context
 
     @listen(create_status_page_ticket)
