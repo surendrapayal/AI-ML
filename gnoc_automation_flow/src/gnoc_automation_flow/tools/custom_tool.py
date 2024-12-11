@@ -94,6 +94,8 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         priority = priority
         summary =summary
         description=description
+        segment=segment
+        product=product
     """
     try:
         # Example of creating an Incident object
@@ -121,10 +123,11 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "scheduled_auto_transition": True
             }
         }
-
+        print( f"$$$$$$$$$$$$$$$$$ {custom_input.segment}")
+        print(f"$$$$$$$$$$$$$$$$$ {custom_input.product}")
         url = f"{status_page_url}/pages/cgdn7cbyygwm/incidents"
         replacements_dict = {"ICD_NUMER": f"{custom_input.jira_id}", "ISSUE_DESCRIPTION": f"{custom_input.summary}",
-                             "IMPACTED_SEGMENT": "L-TSYS Issuing", "IM_IMPACTED_SERVICE": "TransIT"}
+                             "IMPACTED_SEGMENT": f"{custom_input.segment}", "IM_IMPACTED_SERVICE": f"{custom_input.product}"}
 
         # Original document ID
 

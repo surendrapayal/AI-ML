@@ -6,6 +6,8 @@ status_page_creation_task:
     priority : {priority}
     description : {description}
     summary : {summary}
+    segment : {segment}
+    product : {product}
   expected_output: >
-    jira_id, priority and description and status_io_id send as response.
+    jira_id, priority, description, status_io_id, white_board_id and white_board_link send as response.
   agent: status_page_creation_agent

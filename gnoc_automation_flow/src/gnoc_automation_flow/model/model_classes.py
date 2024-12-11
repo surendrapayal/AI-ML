@@ -18,6 +18,8 @@ class MyCustomJiraToolInput(BaseModel):
     description: str = Field(..., description="Description of the issue.")
     jira_id: str = Field("JIRA-123", description="")
     summary: str = Field("DUMMY SUMMARY", description="")
+    segment: str = Field(default="")
+    product: str = Field(default="")
 
 class JiraModel(BaseModel):
     """Jira model class"""
