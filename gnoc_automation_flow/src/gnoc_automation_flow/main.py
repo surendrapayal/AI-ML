@@ -1,32 +1,51 @@
-#!/usr/bin/env python
-from dataclasses import field
-from typing import List
+import os
+
 
 from pydantic import BaseModel
-
 from crewai.flow.flow import Flow, listen, start
 
-from .types import JiraModel
-# from gnoc_automation_flow.src.gnoc_automation_flow.crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
+from .crews.send_google_no_data_crew.send_google_no_data_crew import GoogleSendNoDataCrew
+from .crews.send_google_crew.send_google_crew import GoogleSendCrew
+from .crews.status_page_creation_crew.status_page_creation_crew import  StatusPageCreationCrew
 from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
 from .crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
+from .crews.google_crew.google_crew import GoogleCrew
 
-
-class PriorityIdentificationState(BaseModel):
-    priority: str = ""
+class GNOCAutomation(BaseModel):
     description: str = ""
-    issue_reported: str = ""
+    summary: str = ""
+    segment: str = ""
+    product: str = ""
+    priority: str = ""
+    impact: str = ""
+    urgency: str = ""
+    priority_identification_response: str = ""
 
-class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
+    issue_reported: str = ""
+    jira_id: str = ""
+    status_io_id: str = ""
+    white_board_id: str = ""
+    white_board_link: str = ""
+    subject: str = ""
+    # to: list = None
+    body: str = ""
+    subject1: str = ""
+    subject2: str = ""
+    body1: str = ""
+    body2: str = ""
+
+
+class GNOCAutomationFlow(Flow[GNOCAutomation]):
 
     @start()
     def generate_issue_reported_user(self):
         print("Generating issue reported by user")
-        self.state.issue_reported = "As a user I am not able to perform the transaction from the last 15 minutes and due to this over 500K transactions have declined that result in the revenue loss of more than 150K US dollar. Please look into this issue on urgent basis."
-        # self.state.issue_reported = "As a user I am not able to perform the transaction from the last 5 minutes and due to this around 100 transactions have declined that result in the revenue loss of around 1000 US dollar. Please look into this issue and provide resolution."
+        # self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
+        self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
+        return {"data": []}
 
     @listen(generate_issue_reported_user)
-    def identify_priority_of_issue(self):
+    def identify_priority_of_issue(self, context):
         print("Identifying the priority of the issue reported by user.")
         result = (
             PriorityIdentificationCrew()
@@ -34,41 +53,142 @@ class PriorityIdentificationFlow(Flow[PriorityIdentificationState]):
             .kickoff(inputs={"issue_reported": self.state.issue_reported})
         )
 
-        # print(f"Priority of the issue:- {result.raw}")
-        print(f"Priority:- {result["priority"]}")
-        print(f"Description:- {result["description"]}")
-        self.state.priority = result["priority"]
         self.state.description = result["description"]
+        self.state.summary = result["summary"]
+        self.state.segment = result["segment"]
+        self.state.product = result["product"]
+        self.state.priority = result["priority"]
+        self.state.impact = result["impact"]
+        self.state.urgency = result["urgency"]
+        self.state.priority_identification_response = result.raw
+        print("\n################################")
+        print(f"identify_priority_of_issue :: Raw result:- {result.raw}")
+        context["data"].append("Issue Created with below information")
+        context["data"].append(f"Summary :   {result['summary']}")
+        return context
+
+
 
     @listen(identify_priority_of_issue)
-    def save_issue_and_priority(self):
-        print("Saving priority")
-        with open("priority.txt", "w") as f:
-            f.write("Issue reported by user:-\n" + self.state.issue_reported + "\n\nPriority predicted by LLM:- " + self.state.priority + "\n\nDescription generated by LLM:- " + self.state.description)
-
-    @listen(save_issue_and_priority)
-    def create_jira_ticket(self):
+    def create_jira_ticket(self, context):
         print("Create Jira Ticket based on the priority and description generated by LLM.")
+        print(f"Priority:- {self.state.priority}")
+        print(f"Summary:- {self.state.summary}")
+        print(f"Description:- {self.state.description}")
         result = (
             JiraCreationCrew()
             .crew()
-            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description})
+            .kickoff(inputs={"priority": self.state.priority, "description": self.state.description,
+                             "summary": self.state.summary, "my_custom_jira_tool_input": {
+                    "priority": self.state.priority,
+                    "description": self.state.description,
+                    "summary": self.state.summary
+                }})
+        )
+        print("\n################################")
+        print(f"create_jira_ticket :: Raw result:- {result.raw}")
+        self.state.jira_id = result["jira_id"]
+        self.state.priority = result["priority"]
+        self.state.description = result["description"]
+        self.state.summary = result["summary"]
+        context["data"].append(f"Jira Id :   {result['jira_id']}")
+        return context
+
+    @listen(create_jira_ticket)
+    def create_status_page_ticket(self, context):
+        print("Create Status Page based on the priority and description generated by LLM.")
+        print(f"self.state.product : {self.state.product}")
+        print(f"self.state.segment : {self.state.segment}")
+        product_name=self.state.product
+        segment_name = self.state.segment
+        print(f"segment_name: {segment_name} product_name - {product_name}")
+        result = (
+            StatusPageCreationCrew()
+            .crew()
+            .kickoff(inputs={"jira_id": self.state.jira_id, "priority": self.state.priority, "description": self.state.description, "summary": self.state.summary,"segment": segment_name,"product": product_name, "my_custom_jira_tool_input": {
+            "priority": self.state.priority,
+            "description": self.state.description,
+            "jira_id": self.state.jira_id,
+            "summary": self.state.summary,
+            "segment": segment_name,
+            "product": product_name
+
+        }})
+        )
+        print("\n################################")
+        print(f"create_status_page_ticket :: Raw result:- {result.raw}")
+
+        self.state.status_io_id = result["status_io_id"]
+        self.state.white_board_id = result["white_board_id"]
+        self.state.white_board_link = result["white_board_link"]
+        context["data"].append(f"White Board :   {result["white_board_link"]}")
+        return context
+
+    @listen(create_status_page_ticket)
+    def create_email_template(self, context):
+        if os.path.exists("EmailTemplate.html"):
+            os.remove("EmailTemplate.html")
+        else:
+            print("EmailTemplate.html file does not exist")
+
+        if os.path.exists("EmailTemplateNoData.html"):
+            os.remove("EmailTemplateNoData.html")
+        else:
+            print("EmailTemplateNoData.html file does not exist")
+
+        print("Creating email template")
+        jira_id = self.state.jira_id
+        priority = self.state.priority
+        description = self.state.description
+        impact = self.state.impact
+        urgency = self.state.urgency
+        summary = self.state.summary
+        status_io_id = self.state.status_io_id
+        white_board_link = self.state.white_board_link
+        result = (
+            GoogleCrew()
+            .crew()
+            .kickoff(inputs={"jira_id": jira_id, "priority": priority, "description": description, "project": "GNOC", "impact": impact, "urgency": urgency, "summary": summary, "status_io_id": status_io_id, "white_board_link": white_board_link})
+        )
+        print("\n################################")
+        print(f"create_email_template :: Raw result:- {result.raw}")
+        return context
+
+    @listen(create_email_template)
+    def send_email_gmail(self, context):
+        print("Send email and calendar invite")
+        result = (
+            GoogleSendCrew()
+            .crew()
+            .kickoff()
         )
 
-        print(f"Jira ticket creation output:- {result.raw}")
-        print(f"jiraId:- {result["jiraId"]}")
-        print(f"jiraDescription:- {result["jiraDescription"]}")
+        print("\n################################")
+        print(f"send_email_gmail :: Raw result:- {result.raw}")
+        return context
 
-
+    @listen(create_email_template)
+    def send_email_gmail_no_data(self, context):
+        print("Send email and calendar invite")
+        result = (
+            GoogleSendNoDataCrew()
+            .crew()
+            .kickoff()
+        )
+        print("\n################################")
+        print(f"send_email_gmail_no_data :: Raw result:- {result.raw}")
+        return context
 
 def kickoff():
-    priority_identification_flow = PriorityIdentificationFlow()
-    priority_identification_flow.kickoff()
+    gnoc_identification_flow = GNOCAutomationFlow()
+    result = gnoc_identification_flow.kickoff()
+    print("******************************************")
+    print(result)
 
 
 def plot():
-    priority_identification_flow = PriorityIdentificationFlow()
-    priority_identification_flow.plot()
+    gnoc_identification_flow = GNOCAutomationFlow()
+    gnoc_identification_flow.plot()
 
 
 if __name__ == "__main__":

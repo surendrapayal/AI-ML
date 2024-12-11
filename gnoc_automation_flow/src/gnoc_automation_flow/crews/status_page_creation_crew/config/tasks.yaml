@@ -1,0 +1,13 @@
+status_page_creation_task:
+  description: >
+    Create the incident in atlassian status page. You have provided all the necessary information. Run this custom tool only 1 time and complete the task and exit.
+    Here is input information need to create the incident atlassian status page:
+    jira_id : {jira_id}
+    priority : {priority}
+    description : {description}
+    summary : {summary}
+    segment : {segment}
+    product : {product}
+  expected_output: >
+    jira_id, priority, description, status_io_id, white_board_id and white_board_link send as response.
+  agent: status_page_creation_agent

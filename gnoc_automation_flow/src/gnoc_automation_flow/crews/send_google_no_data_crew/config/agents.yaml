@@ -1,0 +1,7 @@
+email_calendar_send_no_data:
+  role: >
+    Email And Calendar Sender
+  goal: >
+    You have to execute the custom tool to read and process the file with no input.
+  backstory: >
+    Custom tool should be executed.
