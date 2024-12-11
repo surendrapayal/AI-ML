@@ -22,6 +22,7 @@ class GNOCAutomation(BaseModel):
 
     issue_reported: str = ""
     jira_id: str = ""
+    status_io_id: str = ""
     subject: str = ""
     # to: list = None
     body: str = ""
@@ -29,6 +30,7 @@ class GNOCAutomation(BaseModel):
     subject2: str = ""
     body1: str = ""
     body2: str = ""
+
 
 class GNOCAutomationFlow(Flow[GNOCAutomation]):
 
@@ -109,6 +111,7 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         )
         print("\n################################")
         print(f"create_status_page_ticket :: Raw result:- {result.raw}")
+        self.state.status_io_id = result["status_io_id"]
         return context
 
     @listen(create_status_page_ticket)
@@ -130,11 +133,12 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         impact = self.state.impact
         urgency = self.state.urgency
         summary = self.state.summary
+        status_io_id = self.state.status_io_id
 
         result = (
             GoogleCrew()
             .crew()
-            .kickoff(inputs={"jira_id": jira_id, "priority": priority, "description": description, "project": "GNOC", "impact": impact, "urgency": urgency, "summary": summary})
+            .kickoff(inputs={"jira_id": jira_id, "priority": priority, "description": description, "project": "GNOC", "impact": impact, "urgency": urgency, "summary": summary, "status_io_id": status_io_id})
         )
         print("\n################################")
         print(f"create_email_template :: Raw result:- {result.raw}")

@@ -136,10 +136,11 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "jira_d": custom_input.jira_id,
                 "description": custom_input.description,
                 "priority": custom_input.priority,
-                "status_io_id": custom_input.priority,
+                "status_io_id": response.json()["id"],
                 "summary": custom_input.summary
             }
             result_payload = json.dumps(result_payload)
+            print(f"******* status page result_payload *******:- {result_payload}")
             return result_payload
         except requests.exceptions.RequestException as e:
             print(f"Failed to create status page: {e}")

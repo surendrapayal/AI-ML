@@ -25,6 +25,7 @@ class JiraModel(BaseModel):
     description: str = Field(default = "")
     priority: str = Field(default = "")
     summary: str = Field(default="")
+    status_io_id: str = Field(default="")
 
 class EmailTemplate(BaseModel):
     subject: str
