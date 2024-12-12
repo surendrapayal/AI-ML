@@ -1,7 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from ...model.model_classes import PriorityModel
-from ...tools.custom_tool import pdf_reader
+from model.model_classes import PriorityModel
+from tools.custom_tool import pdf_reader
 # from langchain_openai import ChatOpenAI
 
 # llm=ChatOpenAI(

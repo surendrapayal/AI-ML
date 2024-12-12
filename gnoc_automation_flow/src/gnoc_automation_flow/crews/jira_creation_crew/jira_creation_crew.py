@@ -1,7 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from ...model.model_classes import JiraModel
-from ...tools.custom_tool import custom_jira_tool
+from model.model_classes import JiraModel
+from tools.custom_tool import custom_jira_tool
 # from langchain_openai import ChatOpenAI
 
 # llm=ChatOpenAI(

@@ -1,15 +1,12 @@
 import os
-
-
 from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
-
-from .crews.send_google_no_data_crew.send_google_no_data_crew import GoogleSendNoDataCrew
-from .crews.send_google_crew.send_google_crew import GoogleSendCrew
-from .crews.status_page_creation_crew.status_page_creation_crew import  StatusPageCreationCrew
-from .crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
-from .crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
-from .crews.google_crew.google_crew import GoogleCrew
+from crews.send_google_no_data_crew.send_google_no_data_crew import GoogleSendNoDataCrew
+from crews.send_google_crew.send_google_crew import GoogleSendCrew
+from crews.status_page_creation_crew.status_page_creation_crew import  StatusPageCreationCrew
+from crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
+from crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
+from crews.google_crew.google_crew import GoogleCrew
 
 class GNOCAutomation(BaseModel):
     description: str = ""
@@ -63,7 +60,12 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.priority_identification_response = result.raw
         print("\n################################")
         print(f"identify_priority_of_issue :: Raw result:- {result.raw}")
-        context["data"]["summary"]=result['summary']
+        context["data"]["issue_summary"] = result["summary"]
+        context["data"]["issue_description"] = result["description"]
+        context["data"]["issue_priority"] = result["priority"]
+        context["data"]["issue_impact"] = result["impact"]
+        context["data"]["issue_segment"] = result["segment"]
+        context["data"]["issue_product"] = result["product"]
         return context
 
 
@@ -91,7 +93,8 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.description = result["description"]
         self.state.summary = result["summary"]
 
-        context["data"]["jira_id"] = result['jira_id']
+        context["data"]["jira_information"] = result["jira_id"]
+        context["data"]["jira_link"] = "https://rahuluraneai.atlassian.net/browse/" + result["jira_id"]
         return context
 
     @listen(create_jira_ticket)
@@ -122,7 +125,9 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.white_board_id = result["white_board_id"]
         self.state.white_board_link = result["white_board_link"]
 
-        context["data"]["white_board_link"] = result['white_board_link']
+        context["data"]["white_board_information"] = result["white_board_link"]
+        context["data"]["status_io_page_information"] = result["status_io_id"]
+        context["data"]["status_io_page_link"] = "https://manage.statuspage.io/pages/cgdn7cbyygwm/incidents/" + result["status_io_id"]
         return context
 
     @listen(create_status_page_ticket)
@@ -180,13 +185,16 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         print(f"send_email_gmail_no_data :: Raw result:- {result.raw}")
         return context
 
-def kickoff():
-    issue_reported="We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
+def kickoff(issue_reported):
+    print(f"issue_reported:- {issue_reported}")
+    # issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
+    # issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
     gnoc_identification_flow = GNOCAutomationFlow()
     result = gnoc_identification_flow.kickoff(inputs={"issue_reported": issue_reported})
     print("******************************************")
     for inner_key, inner_value in result["data"].items():
         print(f"  Inner key: {inner_key}, Inner value: {inner_value}")
+    return result
 
 
 

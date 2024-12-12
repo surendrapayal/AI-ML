@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from jira import JIRA
 from crewai_tools import tool
 from pypdf import PdfReader
-from ..model.model_classes import MyCustomJiraToolInput, EmailTemplate
+from model.model_classes import MyCustomJiraToolInput, EmailTemplate
 import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -15,7 +15,7 @@ from google.auth.transport.requests import Request
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from google.oauth2.credentials import Credentials
-from google.oauth2.service_account import Credentials as service_credential
+from google.oauth2.service_account import Credentials as ServiceCredential
 import base64
 import pytz
 
@@ -123,8 +123,6 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
                 "scheduled_auto_transition": True
             }
         }
-        print( f"$$$$$$$$$$$$$$$$$ {custom_input.segment}")
-        print(f"$$$$$$$$$$$$$$$$$ {custom_input.product}")
         url = f"{status_page_url}/pages/cgdn7cbyygwm/incidents"
         replacements_dict = {"ICD_NUMER": f"{custom_input.jira_id}", "ISSUE_DESCRIPTION": f"{custom_input.summary}",
                              "IMPACTED_SEGMENT": f"{custom_input.segment}", "IM_IMPACTED_SERVICE": f"{custom_input.product}"}
@@ -320,7 +318,7 @@ SCOPES = ["https://www.googleapis.com/auth/documents.readonly","https://www.goog
 SERVICE_ACCOUNT_JSON =os.getenv("SERVICE_ACCOUNT_JSON")
 def authenticate_google_api():
     """Authenticate and return Google API credentials."""
-    return service_credential.from_service_account_file(SERVICE_ACCOUNT_JSON, scopes=SCOPES)
+    return ServiceCredential.from_service_account_file(SERVICE_ACCOUNT_JSON, scopes=SCOPES)
 
 
 def clone_google_doc(source_doc_id,document_name):

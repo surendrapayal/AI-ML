@@ -4,8 +4,8 @@ from crewai.project import CrewBase, agent, crew, task
 # from ...types import EmailTemplate
 
 
-from ...model.model_classes import EmailTemplate
-from ...tools.custom_tool import custom_email_template_tool
+from model.model_classes import EmailTemplate
+from tools.custom_tool import custom_email_template_tool
 
 
 # from langchain_openai import ChatOpenAI
