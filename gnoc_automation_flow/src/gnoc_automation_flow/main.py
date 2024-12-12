@@ -39,10 +39,10 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
 
     @start()
     def generate_issue_reported_user(self):
-        print("Generating issue reported by user")
+        print(f"Generating issue reported by user-  {self.state.issue_reported}")
         # self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
-        self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
-        return {"data": []}
+        #self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
+        return {"data": {}}
 
     @listen(generate_issue_reported_user)
     def identify_priority_of_issue(self, context):
@@ -63,8 +63,7 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.priority_identification_response = result.raw
         print("\n################################")
         print(f"identify_priority_of_issue :: Raw result:- {result.raw}")
-        context["data"].append("Issue Created with below information")
-        context["data"].append(f"Summary :   {result['summary']}")
+        context["data"]["summary"]=result['summary']
         return context
 
 
@@ -91,7 +90,8 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.priority = result["priority"]
         self.state.description = result["description"]
         self.state.summary = result["summary"]
-        context["data"].append(f"Jira Id :   {result['jira_id']}")
+
+        context["data"]["jira_id"] = result['jira_id']
         return context
 
     @listen(create_jira_ticket)
@@ -121,7 +121,8 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         self.state.status_io_id = result["status_io_id"]
         self.state.white_board_id = result["white_board_id"]
         self.state.white_board_link = result["white_board_link"]
-        context["data"].append(f"White Board :   {result["white_board_link"]}")
+
+        context["data"]["white_board_link"] = result['white_board_link']
         return context
 
     @listen(create_status_page_ticket)
@@ -180,10 +181,13 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         return context
 
 def kickoff():
+    issue_reported="We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
     gnoc_identification_flow = GNOCAutomationFlow()
-    result = gnoc_identification_flow.kickoff()
+    result = gnoc_identification_flow.kickoff(inputs={"issue_reported": issue_reported})
     print("******************************************")
-    print(result)
+    for inner_key, inner_value in result["data"].items():
+        print(f"  Inner key: {inner_key}, Inner value: {inner_value}")
+
 
 
 def plot():
