@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 
 # from demo_flow.tools.custom_tool import my_custom_email_tool_new
 # from ...tools.custom_tool import text_reader
-from ...tools.custom_tool import pdf_reader
+from tools.custom_tool import pdf_reader
 
 # from langchain.llms import GoogleGemini
 
