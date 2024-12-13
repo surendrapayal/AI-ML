@@ -76,6 +76,9 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         print(f"Priority:- {self.state.priority}")
         print(f"Summary:- {self.state.summary}")
         print(f"Description:- {self.state.description}")
+        if "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding.".lower() == self.state.description.lower():
+            raise ValueError("Issue is not related to GP product")
+
         result = (
             JiraCreationCrew()
             .crew()
