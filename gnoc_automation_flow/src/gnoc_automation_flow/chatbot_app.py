@@ -1,3 +1,6 @@
+import base64
+import os
+
 import streamlit as st
 from streamlit_chat import message
 import requests
@@ -15,9 +18,19 @@ def fetch_from_gemini(operation, text):
     except requests.exceptions.RequestException as e:
         return f"Error fetching response from Gemini: {e}"
 
+image_path = f"{os.getcwd()}/gp.png"
 
 # Streamlit app title
-st.title("Global Payments Chatbot")
+# st.title("Global Payments Chatbot")
+st.markdown(
+    f"""
+    <h1 style="display: flex; align-items: center;">
+        <img src="data:image/png;base64, {base64.b64encode(open(image_path, "rb").read()).decode()}" alt="Logo" style="width:50px; margin-right: 10px;">
+        Global Payments Chatbot
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # Initialize session state for chatbot history
 if "messages" not in st.session_state:
@@ -28,32 +41,44 @@ if "user_input" not in st.session_state:
     st.session_state["user_input"] = ""
 
 # Display predefined operations in the chat interface
-operations = ["Report Incident", "Internet Search"]
-operation = st.selectbox("Choose an operation:", operations)
+# operations = ["Report Incident", "Internet Search"]
+# operation = st.selectbox("Choose an operation:", operations)
 
 # Input box for user text
 user_text = st.text_area("Enter your text:", key="user_input")
 
 # If the user provides input and selects an operation, simulate chat
 if st.button("Send"):
-    if operation and user_text:
+    # if operation and user_text:
+    if user_text:
         # Fetch response from GNOC crews and append bot response
-        user_message = f"Operation Selected: {operation}\n\n"
-        user_message = user_message + f"Issue Reported: {user_text}\n\n"
+        # user_message = f"Operation Selected: {operation}\n\n"
+        # user_message = user_message + f"Issue Reported: {user_text}\n\n"
+        user_message = f"Issue Reported: {user_text}\n\n"
         # st.session_state.messages.insert(0, {"role": "user", "content": user_message})
         st.session_state.messages.append({"role": "user", "content": user_message})
         result = main.kickoff(user_text)
-        # Append user message
-        bot_response = f"**Operation Selected:** {operation}\n\n"
-        bot_response = bot_response + f"**Issue Reported:** {user_text}\n\n"
-        bot_response = bot_response + f"**Issue Summary:** {result["data"]["issue_summary"]}\n\n"
-        bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
-        bot_response = bot_response + f"**Issue Priority:** {result["data"]["issue_priority"]}\n\n"
-        bot_response = bot_response + f"**Issue Segment:** {result["data"]["issue_segment"]}\n\n"
-        bot_response = bot_response + f"**Issue Product:** {result["data"]["issue_product"]}\n\n"
-        bot_response = bot_response + f"**Jira Information:** [{result["data"]["jira_information"]}]({result["data"]["jira_link"]})\n\n"
-        bot_response = bot_response + f"**Status IO Page Information:** [Status IO Page]({result["data"]["status_io_page_link"]})\n\n"
-        bot_response = bot_response + f"**White Board Information:** [White Board]({result["data"]["white_board_information"]})\n\n"
+
+        print(f"Type of result:- {type(result)}")
+
+        # Append bot message
+        # bot_response = f"**Operation Selected:** {operation}\n\n"
+        # bot_response = bot_response + f"**Issue Reported:** {user_text}\n\n"
+        bot_response = f"**Issue Reported:** {user_text}\n\n"
+
+        print(f"****** Result Description:- {result["data"]["issue_description"].lower()}")
+
+        if result["data"]["issue_description"].lower() == "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding.".lower():
+            bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
+        else:
+            bot_response = bot_response + f"**Issue Summary:** {result["data"]["issue_summary"]}\n\n"
+            bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
+            bot_response = bot_response + f"**Issue Priority:** {result["data"]["issue_priority"]}\n\n"
+            bot_response = bot_response + f"**Issue Segment:** {result["data"]["issue_segment"]}\n\n"
+            bot_response = bot_response + f"**Issue Product:** {result["data"]["issue_product"]}\n\n"
+            bot_response = bot_response + f"**Jira Information:** [{result["data"]["jira_information"]}]({result["data"]["jira_link"]})\n\n"
+            bot_response = bot_response + f"**Status IO Page Information:** [Status IO Page]({result["data"]["status_io_page_link"]})\n\n"
+            bot_response = bot_response + f"**White Board Information:** [White Board]({result["data"]["white_board_information"]})\n\n"
 
 
         # st.session_state.messages.insert(0, {"role": "bot", "content": bot_response})
