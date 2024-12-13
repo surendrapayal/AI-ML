@@ -26,7 +26,7 @@ st.markdown(
     f"""
     <h1 style="display: flex; align-items: center;">
         <img src="data:image/png;base64, {base64.b64encode(open(image_path, "rb").read()).decode()}" alt="Logo" style="width:50px; margin-right: 10px;">
-        Global Payments Chatbot
+        GNOC Personal Assistant
     </h1>
     """,
     unsafe_allow_html=True
@@ -62,21 +62,30 @@ if st.button("Send"):
         # Append bot message
         # bot_response = f"**Operation Selected:** {operation}\n\n"
         # bot_response = bot_response + f"**Issue Reported:** {user_text}\n\n"
-        bot_response = f"**Issue Reported:** {user_text}\n\n"
-
-        print(f"****** Result Description:- {result["data"]["issue_description"].lower()}")
+        # bot_response = f"<b>Issue Reported:</b> {user_text}\n\n"
+        bot_response = ""
 
         if result["data"]["issue_description"].lower() == "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding.".lower():
-            bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Description:</b> <span style='color:red;'>{result["data"]["issue_description"]}</span>"
+            # bot_response = f"<p style='color:red;'>{bot_response}</p>"
         else:
-            bot_response = bot_response + f"**Issue Summary:** {result["data"]["issue_summary"]}\n\n"
-            bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
-            bot_response = bot_response + f"**Issue Priority:** {result["data"]["issue_priority"]}\n\n"
-            bot_response = bot_response + f"**Issue Segment:** {result["data"]["issue_segment"]}\n\n"
-            bot_response = bot_response + f"**Issue Product:** {result["data"]["issue_product"]}\n\n"
-            bot_response = bot_response + f"**Jira Information:** [{result["data"]["jira_information"]}]({result["data"]["jira_link"]})\n\n"
-            bot_response = bot_response + f"**Status IO Page Information:** [Status IO Page]({result["data"]["status_io_page_link"]})\n\n"
-            bot_response = bot_response + f"**White Board Information:** [White Board]({result["data"]["white_board_information"]})\n\n"
+            # bot_response = bot_response + f"**Issue Summary:** {result["data"]["issue_summary"]}\n\n"
+            # bot_response = bot_response + f"**Issue Description:** {result["data"]["issue_description"]}\n\n"
+            # bot_response = bot_response + f"**Issue Priority:** {result["data"]["issue_priority"]}\n\n"
+            # bot_response = bot_response + f"**Issue Segment:** {result["data"]["issue_segment"]}\n\n"
+            # bot_response = bot_response + f"**Issue Product:** {result["data"]["issue_product"]}\n\n"
+            # bot_response = bot_response + f"**Jira Information:** [{result["data"]["jira_information"]}]({result["data"]["jira_link"]})\n\n"
+            # bot_response = bot_response + f"**Status IO Page Information:** [Status IO Page]({result["data"]["status_io_page_link"]})\n\n"
+            # bot_response = bot_response + f"**White Board Information:** [White Board]({result["data"]["white_board_information"]})\n\n"
+
+            bot_response = bot_response + f"<b>Issue Summary:</b> {result["data"]["issue_summary"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Description:</b> {result["data"]["issue_description"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Priority:</b> {result["data"]["issue_priority"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Segment:</b> {result["data"]["issue_segment"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Product:</b> {result["data"]["issue_product"]}\n\n"
+            bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
+            bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
+            bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
 
 
         st.session_state.messages.insert(1, {"role": "bot", "content": bot_response})
@@ -88,9 +97,10 @@ if st.button("Send"):
 # Display chat messages
 for msg in st.session_state.messages:
     if msg["role"] == "user":
-        message(msg["content"], is_user=True)
+        message(msg["content"], is_user=True, allow_html=True)
     else:
-        message(msg["content"], is_user=False)
+        message(msg["content"], is_user=False, allow_html=True)
+        # st.markdown(msg["content"], unsafe_allow_html=True)
 
 
 # Clear chat button
