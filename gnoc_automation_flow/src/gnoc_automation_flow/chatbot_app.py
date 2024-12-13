@@ -55,11 +55,9 @@ if st.button("Send"):
         # user_message = f"Operation Selected: {operation}\n\n"
         # user_message = user_message + f"Issue Reported: {user_text}\n\n"
         user_message = f"Issue Reported: {user_text}\n\n"
-        # st.session_state.messages.insert(0, {"role": "user", "content": user_message})
-        st.session_state.messages.append({"role": "user", "content": user_message})
+        st.session_state.messages.insert(0, {"role": "user", "content": user_message})
+        # st.session_state.messages.append({"role": "user", "content": user_message})
         result = main.kickoff(user_text)
-
-        print(f"Type of result:- {type(result)}")
 
         # Append bot message
         # bot_response = f"**Operation Selected:** {operation}\n\n"
@@ -81,8 +79,8 @@ if st.button("Send"):
             bot_response = bot_response + f"**White Board Information:** [White Board]({result["data"]["white_board_information"]})\n\n"
 
 
-        # st.session_state.messages.insert(0, {"role": "bot", "content": bot_response})
-        st.session_state.messages.append({"role": "bot", "content": bot_response})
+        st.session_state.messages.insert(1, {"role": "bot", "content": bot_response})
+        # st.session_state.messages.append({"role": "bot", "content": bot_response})
 
         # bot_response = fetch_from_gemini(operation, user_text)
         # st.session_state.messages.append({"role": "bot", "content": bot_response})
