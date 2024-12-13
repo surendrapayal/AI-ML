@@ -66,6 +66,8 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         context["data"]["issue_impact"] = result["impact"]
         context["data"]["issue_segment"] = result["segment"]
         context["data"]["issue_product"] = result["product"]
+        context["data"]["jira_information"] = ""
+        context["data"]["jira_link"] =""
         return context
 
 
@@ -76,6 +78,9 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
         print(f"Priority:- {self.state.priority}")
         print(f"Summary:- {self.state.summary}")
         print(f"Description:- {self.state.description}")
+        if "this issue is not related to GP product and i am able to perform further action".lower()== self.state.description.lower():
+            raise ValueError("Issue is not related to GP product")
+
         result = (
             JiraCreationCrew()
             .crew()
