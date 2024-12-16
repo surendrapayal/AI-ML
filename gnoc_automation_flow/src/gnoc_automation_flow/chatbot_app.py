@@ -18,6 +18,7 @@ def fetch_from_gemini(operation, text):
     except requests.exceptions.RequestException as e:
         return f"Error fetching response from Gemini: {e}"
 
+i = 0
 image_path = f"{os.getcwd()}/gp.png"
 
 # Streamlit app title
@@ -45,18 +46,18 @@ if "user_input" not in st.session_state:
 # operation = st.selectbox("Choose an operation:", operations)
 
 # Input box for user text
-user_text = st.text_area("Enter your text:", key="user_input")
+user_text = st.text_area("Enter your text:", key="user_input_text_area")
 
 # If the user provides input and selects an operation, simulate chat
-if st.button("Send"):
+if st.button("Send", key="send_button"):
     # if operation and user_text:
     if user_text:
         # Fetch response from GNOC crews and append bot response
         # user_message = f"Operation Selected: {operation}\n\n"
         # user_message = user_message + f"Issue Reported: {user_text}\n\n"
         user_message = f"Issue Reported: {user_text}\n\n"
-        st.session_state.messages.insert(0, {"role": "user", "content": user_message})
-        # st.session_state.messages.append({"role": "user", "content": user_message})
+        # st.session_state.messages.insert(0, {"role": "user", "content": user_message})
+        st.session_state.messages.append({"role": "user", "content": user_message})
         result = main.kickoff(user_text)
 
         # Append bot message
@@ -88,21 +89,22 @@ if st.button("Send"):
             bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
 
 
-        st.session_state.messages.insert(1, {"role": "bot", "content": bot_response})
-        # st.session_state.messages.append({"role": "bot", "content": bot_response})
+        # st.session_state.messages.insert(1, {"role": "bot", "content": bot_response})
+        st.session_state.messages.append({"role": "bot", "content": bot_response})
 
         # bot_response = fetch_from_gemini(operation, user_text)
         # st.session_state.messages.append({"role": "bot", "content": bot_response})
 
 # Display chat messages
-for msg in st.session_state.messages:
+for msg in reversed(st.session_state.messages):
+    i += 1
     if msg["role"] == "user":
-        message(msg["content"], is_user=True, allow_html=True)
+        message(msg["content"], is_user=True, key=f"role_user_{i}", allow_html=True)
     else:
-        message(msg["content"], is_user=False, allow_html=True)
+        message(msg["content"], is_user=False, key=f"role_other_{i}", allow_html=True)
         # st.markdown(msg["content"], unsafe_allow_html=True)
 
 
 # Clear chat button
-if st.button("Clear Chat"):
+if st.button("Clear Chat", key="clear_chat_button"):
     st.session_state.messages = []

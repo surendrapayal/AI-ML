@@ -5,6 +5,7 @@ priority_identification_task:
       -  You need to assign the priority from the pdf file only. Its value should be p1, p2, p3 or p4 based on the PDF file.
       -  You need to create the description of the issue reported by user
       -  You need to create one liner summary of the issue reported by user in maximum 10 words
+      -  if the issue's context or meaning is not present in the information extracted from a PDF document then respond with the error saying "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding."
       -  if priority or impact is not able to identify then respond with the error saying "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding."
     Here is the issue reported by the user:- {issue_reported}
   expected_output: >
