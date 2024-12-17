@@ -171,5 +171,5 @@ jira.txt
 calendar_token.json
 gmail_token.json
 PriorityIdentificationResponse.txt
-EmailTemplate.html
-EmailTemplateNoData.html
+sensitiveEmailTemplate.html
+InsensitiveEmailTemplate.html

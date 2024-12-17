@@ -1,4 +1,4 @@
-email_calendar_send:
+send_sensitive_notification_agent:
   role: >
     Email And Calendar Sender
   goal: >

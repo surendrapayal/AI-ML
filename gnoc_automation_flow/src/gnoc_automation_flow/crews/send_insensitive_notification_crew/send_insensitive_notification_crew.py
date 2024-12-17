@@ -3,7 +3,7 @@ from crewai.project import CrewBase, agent, crew, task
 # from langchain_openai import ChatOpenAI
 # from demo_flow.types import my_custom_email_calendar_tool_new
 # from ...tools.custom_tool import my_custom_email_calendar_tool_no_data
-from tools.custom_tool import my_custom_tool_no_data
+from tools.custom_tool import insensitive_notification_tool
 
 
 # from demo_flow.tools.custom_tool import MyCustomEmailInput
@@ -39,19 +39,19 @@ class GoogleSendNoDataCrew():
 	# 	)
 
 	@agent
-	def email_calendar_send_no_data(self) -> Agent:
+	def send_insensitive_notification_agent(self) -> Agent:
 		return Agent(
-			config=self.agents_config['email_calendar_send_no_data'],
+			config=self.agents_config['send_insensitive_notification_agent'],
 			# llm=llm,
 			max_iter=1,
 			# cache=False
 		)
 
 	@task
-	def send_email_calendar_no_data(self) -> Task:
+	def send_insensitive_notification_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['send_email_calendar_no_data'],
-			tools=[my_custom_tool_no_data],
+			config=self.tasks_config['send_insensitive_notification_task'],
+			tools=[insensitive_notification_tool],
 		)
 
 	@crew

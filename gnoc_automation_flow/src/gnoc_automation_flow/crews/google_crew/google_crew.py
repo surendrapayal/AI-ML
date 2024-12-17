@@ -5,7 +5,7 @@ from crewai.project import CrewBase, agent, crew, task
 
 
 from model.model_classes import EmailTemplate
-from tools.custom_tool import custom_email_template_tool
+from tools.custom_tool import draft_email_template_tool
 
 
 # from langchain_openai import ChatOpenAI
@@ -24,9 +24,9 @@ class GoogleCrew():
 	tasks_config = 'config/tasks.yaml'
 
 	@agent
-	def email_writer(self) -> Agent:
+	def email_writer_agent(self) -> Agent:
 		return Agent(
-			config=self.agents_config['email_writer'],
+			config=self.agents_config['email_writer_agent'],
 			# llm=llm,
 			max_iter=1,
 			# cache=False
@@ -35,21 +35,21 @@ class GoogleCrew():
 		)
 
 	@task
-	def write_email(self) -> Task:
+	def sensitive_email_writer_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['write_email'],
+			config=self.tasks_config['sensitive_email_writer_task'],
 			output_pydantic=EmailTemplate,
-			tools=[custom_email_template_tool],
-			output_file="EmailTemplate.html"
+			tools=[draft_email_template_tool],
+			output_file="SensitiveEmailTemplate.html"
 		)
 
 	@task
-	def write_email_no_data(self) -> Task:
+	def insensitive_email_writer_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['write_email_no_data'],
+			config=self.tasks_config['insensitive_email_writer_task'],
 			output_pydantic=EmailTemplate,
-			tools=[custom_email_template_tool],
-			output_file="EmailTemplateNoData.html"
+			tools=[draft_email_template_tool],
+			output_file="InsensitiveEmailTemplate.html"
 		)
 
 	@crew

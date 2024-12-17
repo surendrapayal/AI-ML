@@ -1,6 +1,6 @@
-send_email_calendar_no_data:
+send_insensitive_notification_task:
   description: >
     Task to execute the custom tool to read and process the file with no input.
   expected_output: >
     Custom tool should be executed.
-  agent: email_calendar_send_no_data
+  agent: send_insensitive_notification_agent

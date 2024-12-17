@@ -1,4 +1,4 @@
-email_calendar_send_no_data:
+send_insensitive_notification_agent:
   role: >
     Email And Calendar Sender
   goal: >

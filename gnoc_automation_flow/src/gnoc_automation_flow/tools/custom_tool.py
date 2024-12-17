@@ -165,18 +165,18 @@ def create_status_page_tool(custom_input: MyCustomJiraToolInput):
         raise
 
 @tool
-def my_custom_tool():
+def sensitive_notification_tool():
     """This is custom tool to read and process the file with no input."""
     try:
-        to = os.getenv("MERCHANT_INSENSITIVE_TO_EMAIL")
-        email_template = open("EmailTemplate.html", "r").read()
+        to = os.getenv("MERCHANT_SENSITIVE_TO_EMAIL")
+        email_template = open("SensitiveEmailTemplate.html", "r").read()
 
         email_template_json = json.loads(email_template)
         subject = email_template_json["subject"]
         body = str(email_template_json["body"]).replace("\\", "")
 
         if "issuing" in body.lower():
-            to = os.getenv("ISSUING_INSENSITIVE_TO_EMAIL")
+            to = os.getenv("ISSUING_SENSITIVE_TO_EMAIL")
 
         send_email(to, email, subject, body)
         send_gmeet_invite(to, email, subject, body)
@@ -186,19 +186,19 @@ def my_custom_tool():
         print(f"Failed to create ticket: {e}")
 
 @tool
-def my_custom_tool_no_data():
+def insensitive_notification_tool():
     """This is custom tool to read and process the file with no input."""
     try:
-        to = os.getenv("MERCHANT_SENSITIVE_TO_EMAIL")
+        to = os.getenv("MERCHANT_INSENSITIVE_TO_EMAIL")
 
-        email_template_no_data = open("EmailTemplateNoData.html", "r").read()
+        email_template_no_data = open("InsensitiveEmailTemplate.html", "r").read()
 
         email_template_json = json.loads(email_template_no_data)
         subject = email_template_json["subject"]
         body = str(email_template_json["body"]).replace("\\", "")
 
         if "issuing" in body.lower():
-            to = os.getenv("ISSUING_SENSITIVE_TO_EMAIL")
+            to = os.getenv("ISSUING_INSENSITIVE_TO_EMAIL")
 
         send_email(to, email, subject, body)
 
@@ -312,7 +312,7 @@ def send_gmeet_invite(email_to, email_from, email_subject, email_body):
     except Exception as e:
         print(f"Failed to create ticket: {e}")
 
-custom_email_template_tool = FileReadTool(file_path="email_template_sample.html")
+draft_email_template_tool = FileReadTool(file_path="email_template_sample.html")
 
 SCOPES = ["https://www.googleapis.com/auth/documents.readonly","https://www.googleapis.com/auth/documents",'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
 SERVICE_ACCOUNT_JSON =os.getenv("SERVICE_ACCOUNT_JSON")
