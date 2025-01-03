@@ -60,7 +60,7 @@ class GNOCPriorityFlow(Flow[GNOCPriorityModel]):
         context["data"]["issue_impact"] = result["impact"]
         context["data"]["issue_segment"] = result["segment"]
         context["data"]["issue_product"] = result["product"]
-        context["data"]["urgency"] = result["urgency"]
+        context["data"]["issue_urgency"] = result["urgency"]
         return context
 
 def kickoff(issue_reported):

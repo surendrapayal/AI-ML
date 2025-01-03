@@ -59,6 +59,8 @@ if st.button("Send", key="send_button"):
             bot_response = bot_response + f"<b>Issue Priority:</b> {result["data"]["issue_priority"]}\n\n"
             bot_response = bot_response + f"<b>Issue Segment:</b> {result["data"]["issue_segment"]}\n\n"
             bot_response = bot_response + f"<b>Issue Product:</b> {result["data"]["issue_product"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Impact:</b> {result["data"]["issue_impact"]}\n\n"
+            bot_response = bot_response + f"<b>Issue Urgency:</b> {result["data"]["issue_urgency"]}\n\n"
             # bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
             # bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
             # bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
@@ -88,29 +90,35 @@ for idx, msg in enumerate(st.session_state.messages):
                     st.write("👍 Thumbs Up")
                     # bot_message = st.session_state["messages"][(idx + 1)]["content"]
                     bot_message = msg["content"]
-                    bot_messages = bot_message.split("\n\n")
-                    print(f"bot_messages:- {bot_messages}")
-                    summary = bot_messages[0].split("</b>")[1].strip()
-                    description = bot_messages[1].split("</b>")[1].strip()
-                    priority = bot_messages[2].split("</b>")[1].strip()
-                    segment = bot_messages[3].split("</b>")[1].strip()
-                    product = bot_messages[4].split("</b>")[1].strip()
-                    print(f"Issue Summary:- {bot_messages[0].split("</b>")[1].strip()}")
-                    print(f"Issue Description:- {bot_messages[1].split("</b>")[1].strip()}")
-                    print(f"Issue Priority:- {bot_messages[2].split("</b>")[1].strip()}")
-                    print(f"Issue Segment:- {bot_messages[3].split("</b>")[1].strip()}")
-                    print(f"Issue Product:- {bot_messages[4].split("</b>")[1].strip()}")
-                    bot_response = ""
-                    result = main.kickoff(summary, description, priority, segment, product)
-                    print(f"!!!!!!!!!!!!!!! result:- {result}")
-                    bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
-                    bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
-                    bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
-                    # bot_response = bot_response + f"<b>Jira Information:</b> JIRA-123\n\n"
-                    # bot_response = bot_response + f"<b>Status IO Page Information:</b> STATUS-IO-54321\n\n"
-                    messages = cast(List[Dict[str, str]], st.session_state["messages"])
-                    st.session_state.messages.append({"role": "bot", "content": bot_response})
-                    continue
+                    print(f"#########bot_message:- {bot_message}")
+                    if "This issue does not appear to be related to any GP products, and unfortunately, I am unable to proceed with further action. Thank you for your understanding.".lower() not in bot_message.lower():
+                        bot_messages = bot_message.split("\n\n")
+                        print(f"bot_messages:- {bot_messages}")
+                        summary = bot_messages[0].split("</b>")[1].strip()
+                        description = bot_messages[1].split("</b>")[1].strip()
+                        priority = bot_messages[2].split("</b>")[1].strip()
+                        segment = bot_messages[3].split("</b>")[1].strip()
+                        product = bot_messages[4].split("</b>")[1].strip()
+                        impact = bot_messages[5].split("</b>")[1].strip()
+                        urgency = bot_messages[6].split("</b>")[1].strip()
+                        print(f"Issue Summary:- {bot_messages[0].split("</b>")[1].strip()}")
+                        print(f"Issue Description:- {bot_messages[1].split("</b>")[1].strip()}")
+                        print(f"Issue Priority:- {bot_messages[2].split("</b>")[1].strip()}")
+                        print(f"Issue Segment:- {bot_messages[3].split("</b>")[1].strip()}")
+                        print(f"Issue Product:- {bot_messages[4].split("</b>")[1].strip()}")
+                        print(f"Issue Impact:- {bot_messages[5].split("</b>")[1].strip()}")
+                        print(f"Issue Urgency:- {bot_messages[6].split("</b>")[1].strip()}")
+                        bot_response = ""
+                        result = main.kickoff(summary, description, priority, segment, product, impact, urgency)
+                        print(f"!!!!!!!!!!!!!!! result:- {result}")
+                        bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
+                        bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
+                        bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
+                        # bot_response = bot_response + f"<b>Jira Information:</b> JIRA-123\n\n"
+                        # bot_response = bot_response + f"<b>Status IO Page Information:</b> STATUS-IO-54321\n\n"
+                        messages = cast(List[Dict[str, str]], st.session_state["messages"])
+                        st.session_state.messages.append({"role": "bot", "content": bot_response})
+                        continue
             with col2:
                 if st.button("👎", key=f"thumbs_down_{i}"):
                     feedback_index = idx

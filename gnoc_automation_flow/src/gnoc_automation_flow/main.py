@@ -1,10 +1,9 @@
 import os
 from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
-from crews.send_google_no_data_crew.send_google_no_data_crew import GoogleSendNoDataCrew
-from crews.send_google_crew.send_google_crew import GoogleSendCrew
+from crews.send_insensitive_notification_crew.send_insensitive_notification_crew import GoogleSendNoDataCrew
+from crews.send_sensitive_notification_crew.send_sensitive_notification_crew import GoogleSendCrew
 from crews.status_page_creation_crew.status_page_creation_crew import  StatusPageCreationCrew
-from crews.priority_identification_crew.priority_identification_crew import PriorityIdentificationCrew
 from crews.jira_creation_crew.jira_creation_crew import JiraCreationCrew
 from crews.google_crew.google_crew import GoogleCrew
 
@@ -36,7 +35,15 @@ class GNOCAutomationFlow(Flow[GNOCAutomation]):
 
     @start()
     def create_issue_reported_user(self):
-        print(f"Generating issue reported by user-  {self.state.issue_reported}")
+        print(f"inside create_issue_reported_user method")
+        print(f"Issue Summary:-  {self.state.summary}")
+        print(f"Issue Description:-  {self.state.description}")
+        print(f"Issue Priority:-  {self.state.priority}")
+        print(f"Issue Segment:-  {self.state.segment}")
+        print(f"Issue Product:-  {self.state.product}")
+        print(f"Issue Impact:-  {self.state.impact}")
+        print(f"Issue Urgency:-  {self.state.urgency}")
+
         # self.state.issue_reported = "We are experiencing a critical issue in the merchant segment impacting our Transit product. Customers have been unable to perform Mastercard card transactions for the past 15 minutes, resulting in significant disruption. Approximately 10,000 transactions have been declined during this time, leading to a revenue loss of $50,000. This issue is affecting multiple merchants and requires immediate attention. The root cause appears to be related to the processing system for Mastercard transactions on the Transit product. Please prioritize this issue, as it has a high financial impact and is negatively affecting customer experience."
         #self.state.issue_reported = "We are facing a critical issue in the issuing segment, specifically impacting our INTL Citi Bank product. The problem has resulted in Visa and Mastercard transactions failing across multiple channels. The issue has led to more than 100,000 transaction failures, causing significant disruption to the client’s operations. The estimated revenue loss exceeds $1 million, highlighting the severity of the situation. This outage is negatively impacting customer trust and requires immediate investigation to identify and resolve the root cause. Prompt action is needed to mitigate further losses and restore normal transaction processing for the INTL Citi Bank product."
         return {"data": {}}
