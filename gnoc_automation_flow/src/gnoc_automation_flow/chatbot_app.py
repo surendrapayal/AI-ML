@@ -7,7 +7,6 @@ import main
 from typing import cast, List, Dict
 
 i = 0
-feedback_index = 0
 image_path = f"{os.getcwd()}/gp.png"
 
 def display_message():
@@ -61,9 +60,6 @@ if st.button("Send", key="send_button"):
             bot_response = bot_response + f"<b>Issue Product:</b> {result["data"]["issue_product"]}\n\n"
             bot_response = bot_response + f"<b>Issue Impact:</b> {result["data"]["issue_impact"]}\n\n"
             bot_response = bot_response + f"<b>Issue Urgency:</b> {result["data"]["issue_urgency"]}\n\n"
-            # bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
-            # bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
-            # bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
 
         messages = cast(List[Dict[str, str]], st.session_state["messages"])
         st.session_state.messages.append({"role": "bot", "content": bot_response})
@@ -84,7 +80,6 @@ for idx, msg in enumerate(st.session_state.messages):
             col1, col2 = st.columns([1, 1])
             with col1:
                 if st.button("👍", key=f"thumbs_up_{i}"):
-                    feedback_index = idx
                     st.session_state.feedback[idx] = "up"
                     # Display specific feedback immediately
                     st.write("👍 Thumbs Up")
@@ -114,14 +109,11 @@ for idx, msg in enumerate(st.session_state.messages):
                         bot_response = bot_response + f"<b>Jira Information:</b> <a href='{result["data"]["jira_link"]}'>{result["data"]["jira_information"]}</a>\n\n"
                         bot_response = bot_response + f"<b>Status IO Page Information:</b> <a href='{result["data"]["status_io_page_link"]}'>Status IO Page</a>\n\n"
                         bot_response = bot_response + f"<b>White Board Information:</b> <a href='{result["data"]["white_board_information"]}'>White Board</a>\n\n"
-                        # bot_response = bot_response + f"<b>Jira Information:</b> JIRA-123\n\n"
-                        # bot_response = bot_response + f"<b>Status IO Page Information:</b> STATUS-IO-54321\n\n"
                         messages = cast(List[Dict[str, str]], st.session_state["messages"])
                         st.session_state.messages.append({"role": "bot", "content": bot_response})
                         continue
             with col2:
                 if st.button("👎", key=f"thumbs_down_{i}"):
-                    feedback_index = idx
                     st.session_state.feedback[idx] = "down"
                     # Display specific feedback immediately
                     # bot_message = st.session_state["messages"][-(idx + 1)]["content"]
